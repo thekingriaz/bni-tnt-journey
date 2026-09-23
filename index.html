@@ -1,0 +1,820 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BNI TNT New Member Journey</title>
+<meta name="theme-color" content="#C8102E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23C8102E'/%3E%3Cpath d='M18 44l10-12 8 7 10-15' stroke='white' stroke-width='6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+:root{
+  --red:#C8102E; --red-d:#9e0c24; --ink:#1d1d1f; --ink2:#55565b; --ink3:#86878c;
+  --bg:#f5f5f7; --card:#fff; --line:#e3e3e8; --soft:#fbeaec;
+  --g:#1f9d55; --g-bg:#e6f5ec; --a:#c77700; --a-bg:#fff3de; --r:#d42a3c; --r-bg:#fde8ea; --n:#8a8b90; --n-bg:#efeff2;
+  --radius:12px; --shadow:0 1px 2px rgba(0,0,0,.05),0 2px 8px rgba(0,0,0,.04);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans",Arial,sans-serif;-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--red)}
+.hidden{display:none!important}
+header.top{position:sticky;top:0;z-index:20;background:var(--red);color:#fff;padding:10px 16px calc(10px);display:flex;align-items:center;gap:10px}
+header.top .brand{font-weight:700;letter-spacing:.2px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header.top .brand small{display:block;font-weight:500;opacity:.85;font-size:12px}
+header.top select{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:8px;padding:6px 8px;max-width:48vw}
+header.top select option{color:#111}
+header.top .out{background:none;border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:8px;padding:6px 10px;cursor:pointer}
+nav.tabs{position:sticky;top:56px;z-index:19;background:#fff;border-bottom:1px solid var(--line);display:flex;overflow-x:auto;scrollbar-width:none}
+nav.tabs::-webkit-scrollbar{display:none}
+nav.tabs button{flex:0 0 auto;background:none;border:0;padding:12px 14px;font-weight:600;color:var(--ink2);border-bottom:3px solid transparent;cursor:pointer}
+nav.tabs button.on{color:var(--red);border-bottom-color:var(--red)}
+main{max-width:1100px;margin:0 auto;padding:16px 16px 80px}
+h2{font-size:20px;margin:4px 0 12px}
+h3{font-size:16px;margin:20px 0 8px}
+.muted{color:var(--ink3)} .small{font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;margin-bottom:10px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.grow{flex:1;min-width:0}
+.btn{background:var(--red);color:#fff;border:0;border-radius:10px;padding:9px 14px;font-weight:600;cursor:pointer;white-space:nowrap}
+.btn:hover{background:var(--red-d)} .btn:disabled{opacity:.5;cursor:default}
+.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)} .btn.ghost:hover{background:#f2f2f4}
+.btn.sm{padding:6px 10px;font-size:13px;border-radius:8px}
+.btn.ok{background:var(--g)}
+input[type=text],input[type=password],input[type=date],input[type=number],input[type=tel],select,textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 10px;background:#fff}
+textarea{min-height:70px;resize:vertical}
+label.f{display:block;margin:10px 0 4px;font-size:13px;font-weight:600;color:var(--ink2)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+@media (max-width:640px){.grid2{grid-template-columns:1fr}}
+.pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+.pill.g{background:var(--g-bg);color:var(--g)} .pill.a{background:var(--a-bg);color:var(--a)} .pill.r{background:var(--r-bg);color:var(--r)} .pill.n{background:var(--n-bg);color:var(--n)}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex:0 0 10px}
+.dot.green{background:var(--g)} .dot.amber{background:var(--a)} .dot.red{background:var(--r)} .dot.nodata{background:#c4c4c9}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+@media (max-width:640px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:12px}
+.kpi .v{font-size:26px;font-weight:700;line-height:1.1}
+.kpi .l{font-size:12px;color:var(--ink3);margin-top:2px}
+.bar{height:6px;background:#eee;border-radius:9px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--g)}
+.mix{display:flex;height:10px;border-radius:9px;overflow:hidden;background:#eee}
+.mix i{display:block;height:100%}
+table.t{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;font-size:14px}
+table.t th,table.t td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+table.t th{background:#fafafb;font-size:12px;color:var(--ink2);text-transform:uppercase;letter-spacing:.3px}
+table.t tr:last-child td{border-bottom:0}
+table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums}
+.tw{overflow-x:auto;margin-bottom:10px}
+.task{display:flex;gap:10px;align-items:flex-start}
+.task .who{font-weight:700}
+.task .meta{font-size:13px;color:var(--ink2)}
+.group-h{display:flex;align-items:center;gap:8px;margin:18px 0 8px;font-weight:700}
+.group-h .count{background:var(--ink);color:#fff;border-radius:999px;font-size:12px;padding:1px 8px}
+.group-h.over .count{background:var(--r)}
+.owner-h{font-size:13px;font-weight:700;color:var(--ink2);margin:12px 0 6px;text-transform:uppercase;letter-spacing:.3px}
+.mcard{cursor:pointer}
+.mcard:hover{border-color:#cfcfd6}
+.tl{border-left:2px solid var(--line);margin-left:6px;padding-left:14px}
+.tl .it{position:relative;padding:8px 0}
+.tl .it:before{content:"";position:absolute;left:-21px;top:13px;width:12px;height:12px;border-radius:50%;background:#fff;border:2px solid #c4c4c9}
+.tl .it.done:before{background:var(--g);border-color:var(--g)}
+.tl .it.over:before{border-color:var(--r)}
+.tl .it.na:before{background:#c4c4c9}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.filters>*{flex:1 1 160px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#1d1d1f;color:#fff;padding:10px 16px;border-radius:10px;z-index:100;max-width:90vw;box-shadow:0 6px 24px rgba(0,0,0,.2)}
+.toast.err{background:var(--r)}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:50;display:flex;align-items:flex-end;justify-content:center}
+@media (min-width:700px){.modal-bg{align-items:center}}
+.modal{background:#fff;width:100%;max-width:520px;border-radius:16px 16px 0 0;padding:18px 16px 22px;max-height:92vh;overflow:auto}
+@media (min-width:700px){.modal{border-radius:16px}}
+.stars{display:flex;gap:6px}
+.stars button{flex:1;padding:10px 0;border:1px solid var(--line);border-radius:10px;background:#fff;font-weight:700;cursor:pointer}
+.stars button.on{background:var(--red);color:#fff;border-color:var(--red)}
+.login{max-width:380px;margin:12vh auto 0;padding:0 16px}
+.login .logo{width:56px;height:56px;border-radius:14px;background:var(--red);display:grid;place-items:center;margin-bottom:14px}
+.flag{color:var(--r);font-weight:700}
+.warn{background:var(--a-bg);border:1px solid #f1d49b;color:#6b4500;border-radius:10px;padding:10px 12px;font-size:14px;margin-bottom:10px}
+.empty{padding:26px;text-align:center;color:var(--ink3)}
+.spin{display:inline-block;width:16px;height:16px;border:2px solid #ddd;border-top-color:var(--red);border-radius:50%;animation:s 1s linear infinite;vertical-align:-3px}
+@keyframes s{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div id="loginView" class="login hidden">
+  <div class="logo"><svg width="30" height="30" viewBox="0 0 64 64"><path d="M14 46l12-14 10 8 14-18" stroke="#fff" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  <h2 style="margin:0">New Member Journey</h2>
+  <p class="muted" style="margin-top:4px">BNI TNT Region</p>
+  <form id="loginForm" class="card">
+    <label class="f" for="lu">Chapter username (or admin email)</label>
+    <input id="lu" type="text" autocomplete="username" autocapitalize="none" placeholder="e.g. kanya" required>
+    <label class="f" for="lp">Password</label>
+    <input id="lp" type="password" autocomplete="current-password" required>
+    <div style="margin-top:14px"><button class="btn" style="width:100%" type="submit">Log in</button></div>
+    <p id="loginErr" class="small" style="color:var(--r);margin:10px 0 0"></p>
+  </form>
+</div>
+
+<div id="appView" class="hidden">
+  <header class="top">
+    <div class="brand">New Member Journey<small id="whoami"></small></div>
+    <select id="chapterSel" class="hidden" aria-label="Chapter"></select>
+    <button class="out" id="logoutBtn">Log out</button>
+  </header>
+  <nav class="tabs" id="tabs"></nav>
+  <main id="main"><div class="empty"><span class="spin"></span> Loading…</div></main>
+</div>
+
+<div id="modalRoot"></div>
+
+<script src="vendor/supabase.js"></script>
+<script src="vendor/xlsx.full.min.js"></script>
+<script src="lib/health.js"></script>
+<script src="lib/palms.js"></script>
+<script>
+'use strict';
+/* ======================= basics ======================= */
+const DOMAIN = 'journey.bnitnt.in';
+const S = { sb:null, session:null, profile:null, chapterSel:'all', tab:'week',
+  chapters:[], members:[], tasks:[], palms:[], links:[], people:[], sdc:[], templates:[], config:{},
+  filters:{ week:{owner:'', q:'', later:false}, members:{q:'', health:'', track:''} }, memberOpen:null };
+
+const $ = (s, el=document) => el.querySelector(s);
+const esc = (v) => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function todayISO(){ return new Date(Date.now() + 5.5*3600e3).toISOString().slice(0,10); }
+function addDays(iso,n){ const t=new Date(iso+'T00:00:00Z'); t.setUTCDate(t.getUTCDate()+n); return t.toISOString().slice(0,10); }
+function daysBetween(a,b){ return Math.round((Date.parse(b+'T00:00:00Z')-Date.parse(a+'T00:00:00Z'))/864e5); }
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function fmt(iso){ if(!iso) return '-'; const [y,m,d]=String(iso).slice(0,10).split('-'); return `${+d} ${MON[+m-1]} ${y}`; }
+function fmtS(iso){ if(!iso) return '-'; const [y,m,d]=String(iso).slice(0,10).split('-'); return `${+d} ${MON[+m-1]}`; }
+function monthStart(iso){ return iso.slice(0,8)+'01'; }
+function toast(msg, err){ const t=document.createElement('div'); t.className='toast'+(err?' err':''); t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(), err?5000:2600); }
+function goLive(){ return S.config.go_live_date || '2026-10-01'; }
+const isAdmin = () => S.profile && S.profile.role === 'admin';
+const chName = (id) => (S.chapters.find(c=>c.id===id)||{}).name || '';
+
+/* ======================= data ======================= */
+async function fetchAll(table, select, order, noId){
+  const out=[];
+  for(let from=0;;from+=1000){
+    let q=S.sb.from(table).select(select).range(from, from+999);
+    if(order) q=q.order(order);
+    if(!noId) q=q.order('id', {ascending:true});
+    const {data,error}=await q; if(error) throw error;
+    out.push(...data); if(data.length<1000) break;
+  }
+  return out;
+}
+async function loadData(){
+  const [chapters, cfg, templates] = await Promise.all([
+    S.sb.from('chapters').select('*').order('name'),
+    S.sb.from('app_config').select('*'),
+    S.sb.from('task_templates').select('*').order('seq'),
+  ]);
+  for(const r of [chapters,cfg,templates]) if(r.error) throw r.error;
+  S.chapters=chapters.data; S.templates=templates.data;
+  S.config=Object.fromEntries(cfg.data.map(r=>[r.key,r.value]));
+  const [members,tasks,palms,links,people,sdc]=await Promise.all([
+    fetchAll('members','*','full_name'),
+    fetchAll('tasks','*','due_date'),
+    fetchAll('palms_rows','id,member_id,chapter_id,palms_name,p,a,l,m,s,rgi,rgo,rri,rro,one2one,upload_id,palms_uploads(period_from,period_to)'),
+    fetchAll('palms_links','*','palms_name',true),
+    fetchAll('chapter_people','*','name'),
+    fetchAll('sdc_reviews','*','review_month'),
+  ]);
+  S.members=members; S.tasks=tasks; S.links=links; S.people=people; S.sdc=sdc;
+  S.palms=palms.map(p=>({...p, period_from:p.palms_uploads?.period_from, period_to:p.palms_uploads?.period_to}));
+  index();
+}
+function index(){
+  S.tasksBy=new Map(); for(const t of S.tasks){ if(!S.tasksBy.has(t.member_id)) S.tasksBy.set(t.member_id,[]); S.tasksBy.get(t.member_id).push(t); }
+  S.palmsBy=new Map(); for(const p of S.palms){ if(!p.member_id) continue; if(!S.palmsBy.has(p.member_id)) S.palmsBy.set(p.member_id,[]); S.palmsBy.get(p.member_id).push(p); }
+  S.memberById=new Map(S.members.map(m=>[m.id,m]));
+  S.healthCache=new Map();
+}
+function health(m){
+  if(!S.healthCache.has(m.id)) S.healthCache.set(m.id, Health.computeHealth(m, S.tasksBy.get(m.id)||[], S.palmsBy.get(m.id)||[], todayISO()));
+  return S.healthCache.get(m.id);
+}
+function scoped(list){ return S.chapterSel==='all' ? list : list.filter(x=>x.chapter_id===Number(S.chapterSel)); }
+function activeMembers(){ return scoped(S.members).filter(m=>m.status==='active'); }
+function track(m){ return m.induction_date && m.induction_date < goLive() ? 'B' : 'A'; }
+function monthNo(m){ return m.induction_date ? Math.max(1, Math.floor(daysBetween(m.induction_date, todayISO())/30.44)+1) : 0; }
+function ownerName(t, m){ return (t.owner_role==='Mentor' || t.owner_role==='Mentor + Head Table') && m && m.mentor_name ? `${t.owner_role}: ${m.mentor_name}` : t.owner_role; }
+function completion(tasks, upTo){ const due=tasks.filter(t=>t.status!=='na' && t.due_date<=upTo); const done=due.filter(t=>t.status==='done').length; return {done, total:due.length, pct: due.length? Math.round(done*100/due.length) : null}; }
+const LVL={green:'g',amber:'a',red:'r',nodata:'n'};
+const LBL={green:'Green',amber:'Amber',red:'Red',nodata:'No data'};
+function hpill(st){ return `<span class="pill ${LVL[st]}">${LBL[st]}</span>`; }
+
+/* ======================= auth ======================= */
+async function boot(){
+  let cfg;
+  try{ const r=await fetch('/api/config'); cfg=await r.json(); if(!r.ok) throw new Error(cfg.error||'config'); }
+  catch(e){ document.body.innerHTML='<div class="login"><h2>Setup incomplete</h2><p>'+esc(e.message)+'</p></div>'; return; }
+  S.sb=supabase.createClient(cfg.url, cfg.anonKey, {auth:{persistSession:true, autoRefreshToken:true}});
+  const {data}=await S.sb.auth.getSession();
+  if(data.session) await afterLogin(data.session); else showLogin();
+}
+function showLogin(){ $('#appView').classList.add('hidden'); $('#loginView').classList.remove('hidden'); }
+$('#loginForm').addEventListener('submit', async (e)=>{
+  e.preventDefault(); $('#loginErr').textContent='';
+  let u=$('#lu').value.trim().toLowerCase(); if(!u.includes('@')) u=`${u}@${DOMAIN}`;
+  const {data,error}=await S.sb.auth.signInWithPassword({email:u, password:$('#lp').value});
+  if(error){ $('#loginErr').textContent='Wrong username or password.'; return; }
+  await afterLogin(data.session);
+});
+$('#logoutBtn').addEventListener('click', async ()=>{ await S.sb.auth.signOut(); location.reload(); });
+
+async function afterLogin(session){
+  S.session=session;
+  const {data:prof,error}=await S.sb.from('profiles').select('*').eq('user_id', session.user.id).maybeSingle();
+  if(error || !prof){ await S.sb.auth.signOut(); showLogin(); $('#loginErr').textContent='This login has no access yet. Ask the regional team.'; return; }
+  S.profile=prof;
+  $('#loginView').classList.add('hidden'); $('#appView').classList.remove('hidden');
+  try{ await loadData(); }catch(e){ $('#main').innerHTML='<div class="card">Could not load data: '+esc(e.message)+'</div>'; return; }
+  if(isAdmin()){
+    S.chapterSel = sessionStorageGet('chSel') || 'all';
+    const sel=$('#chapterSel'); sel.classList.remove('hidden');
+    sel.innerHTML='<option value="all">All chapters</option>'+S.chapters.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
+    sel.value=S.chapterSel;
+    sel.onchange=()=>{ S.chapterSel=sel.value; sessionStorageSet('chSel', sel.value); render(); };
+    $('#whoami').textContent='Region admin · '+session.user.email;
+    S.tab = sessionStorageGet('tab') || 'region';
+  } else {
+    S.chapterSel=String(prof.chapter_id);
+    $('#whoami').textContent=chName(prof.chapter_id);
+    S.tab = sessionStorageGet('tab') || 'week';
+  }
+  render();
+}
+function sessionStorageGet(k){ try{ return sessionStorage.getItem(k); }catch(e){ return null; } }
+function sessionStorageSet(k,v){ try{ sessionStorage.setItem(k,v); }catch(e){} }
+
+/* ======================= shell ======================= */
+function tabsList(){
+  const t=[['week','This Week'],['members','Members'],['dash','Dashboard']];
+  if(isAdmin()) t.unshift(['region','Region']);
+  t.push(['settings', isAdmin()?'Leaders':'Settings']);
+  if(isAdmin()) t.push(['admin','Admin']);
+  return t;
+}
+function render(){
+  const tabs=tabsList(); if(!tabs.some(x=>x[0]===S.tab)) S.tab=tabs[0][0];
+  $('#tabs').innerHTML=tabs.map(([k,l])=>`<button data-tab="${k}" class="${S.tab===k&&!S.memberOpen?'on':''}">${l}</button>`).join('');
+  const main=$('#main');
+  if(S.memberOpen){ main.innerHTML=viewMember(S.memberOpen); window.scrollTo(0,0); return; }
+  const v={week:viewWeek, members:viewMembers, dash:viewDash, region:viewRegion, settings:viewSettings, admin:viewAdmin}[S.tab];
+  main.innerHTML=v();
+  if(S.tab==='admin') adminAfterRender();
+}
+$('#tabs').addEventListener('click', e=>{ const b=e.target.closest('button[data-tab]'); if(!b) return; S.tab=b.dataset.tab; S.memberOpen=null; sessionStorageSet('tab',S.tab); render(); window.scrollTo(0,0); });
+
+/* ======================= This Week ======================= */
+function viewWeek(){
+  const today=todayISO(), end=addDays(today,6), f=S.filters.week;
+  const members=new Map(activeMembers().map(m=>[m.id,m]));
+  let open=scoped(S.tasks).filter(t=>t.status==='open' && members.has(t.member_id));
+  const owners=[...new Set(open.map(t=>ownerName(t, members.get(t.member_id))))].sort();
+  if(f.owner) open=open.filter(t=>ownerName(t, members.get(t.member_id))===f.owner);
+  if(f.q){ const q=f.q.toLowerCase(); open=open.filter(t=>members.get(t.member_id).full_name.toLowerCase().includes(q) || t.title.toLowerCase().includes(q)); }
+  const over=open.filter(t=>t.due_date<today), week=open.filter(t=>t.due_date>=today && t.due_date<=end), later=open.filter(t=>t.due_date>end);
+  const group=(list)=>{
+    const by=new Map(); for(const t of list){ const k=ownerName(t, members.get(t.member_id)); if(!by.has(k)) by.set(k,[]); by.get(k).push(t); }
+    return [...by.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(([k,ts])=>`<div class="owner-h">${esc(k)} · ${ts.length}</div>`+ts.sort((a,b)=>a.due_date<b.due_date?-1:1).map(t=>taskCard(t, members.get(t.member_id))).join('')).join('');
+  };
+  return `
+  <h2>This Week</h2>
+  <p class="muted small" style="margin-top:-6px">${fmt(today)}${S.chapterSel==='all'?' · all chapters':' · '+esc(chName(Number(S.chapterSel)))}</p>
+  <div class="filters">
+    <select data-f="week.owner"><option value="">All owners</option>${owners.map(o=>`<option ${o===f.owner?'selected':''}>${esc(o)}</option>`).join('')}</select>
+    <input type="text" data-f="week.q" placeholder="Search member or task" value="${esc(f.q)}">
+  </div>
+  <div class="group-h over">Overdue <span class="count">${over.length}</span></div>
+  ${over.length?group(over):'<div class="card empty">Nothing overdue. 👏</div>'}
+  <div class="group-h">Due this week <span class="count">${week.length}</span></div>
+  ${week.length?group(week):'<div class="card empty">Nothing due in the next 7 days.</div>'}
+  <div class="group-h">Coming later <span class="count">${later.length}</span>
+    <button class="btn ghost sm" data-act="toggleLater">${f.later?'Hide':'Show'}</button></div>
+  ${f.later?(later.length?group(later):'<div class="card empty">Nothing scheduled.</div>'):''}`;
+}
+function taskCard(t, m){
+  const today=todayISO(); const late=t.due_date<today ? daysBetween(t.due_date,today) : 0;
+  return `<div class="card task">
+    <div class="grow">
+      <div><a href="#" data-act="openMember" data-id="${m.id}" class="who" style="color:inherit;text-decoration:none">${esc(m.full_name)}</a>
+        ${S.chapterSel==='all'?`<span class="muted small"> · ${esc(chName(m.chapter_id))}</span>`:''}</div>
+      <div>${esc(t.title)}${t.is_catchup?' <span class="pill n">catch-up</span>':''}</div>
+      <div class="meta">Due ${fmtS(t.due_date)}${late?` · <span class="flag">${late} day${late>1?'s':''} late</span>`:''}</div>
+    </div>
+    <div class="row" style="flex-direction:column;align-items:stretch;gap:6px">
+      <button class="btn sm ok" data-act="done" data-id="${t.id}">Done</button>
+      <button class="btn ghost sm" data-act="na" data-id="${t.id}">N/A</button>
+    </div>
+  </div>`;
+}
+
+/* ======================= Members ======================= */
+function viewMembers(){
+  const f=S.filters.members;
+  let list=activeMembers();
+  if(f.q){ const q=f.q.toLowerCase(); list=list.filter(m=>(m.full_name+' '+(m.category||'')+' '+(m.mentor_name||'')).toLowerCase().includes(q)); }
+  if(f.health) list=list.filter(m=>health(m).status===f.health);
+  if(f.track) list=list.filter(m=>track(m)===f.track);
+  const order={red:0,amber:1,nodata:2,green:3};
+  list.sort((a,b)=>order[health(a).status]-order[health(b).status] || a.full_name.localeCompare(b.full_name));
+  const inactive=scoped(S.members).filter(m=>m.status!=='active').length;
+  return `<h2>Members <span class="muted small">${list.length} first-year</span></h2>
+  <div class="filters">
+    <input type="text" data-f="members.q" placeholder="Search name, category, mentor" value="${esc(f.q)}">
+    <select data-f="members.health"><option value="">All health</option>${['red','amber','green','nodata'].map(s=>`<option value="${s}" ${f.health===s?'selected':''}>${LBL[s]}</option>`).join('')}</select>
+    <select data-f="members.track"><option value="">Both tracks</option><option value="A" ${f.track==='A'?'selected':''}>Track A (new)</option><option value="B" ${f.track==='B'?'selected':''}>Track B (rescue)</option></select>
+  </div>
+  ${list.length?list.map(memberCard).join(''):'<div class="card empty">No members yet. The regional team adds them in Admin.</div>'}
+  ${inactive?`<p class="muted small">${inactive} member(s) marked renewed or left are hidden.</p>`:''}`;
+}
+function memberCard(m){
+  const h=health(m), ts=S.tasksBy.get(m.id)||[], c=completion(ts, todayISO());
+  const allDone=ts.filter(t=>t.status==='done').length;
+  const over=ts.filter(t=>t.status==='open'&&t.due_date<todayISO()).length;
+  return `<div class="card mcard" data-act="openMember" data-id="${m.id}">
+    <div class="row"><span class="dot ${h.status}"></span><b class="grow">${esc(m.full_name)}</b>${hpill(h.status)}</div>
+    <div class="small muted" style="margin:4px 0 8px">${esc(m.category||'')}${S.chapterSel==='all'?' · '+esc(chName(m.chapter_id)):''} · ${m.induction_date?'Month '+monthNo(m):'Not inducted yet'} · Track ${track(m)} · Mentor: ${esc(m.mentor_name||'not assigned')}</div>
+    <div class="row small"><div class="grow bar"><i style="width:${ts.length?Math.round(allDone*100/ts.length):0}%"></i></div>
+      <span>${allDone}/${ts.length} done</span>${over?`<span class="flag">${over} overdue</span>`:''}</div>
+  </div>`;
+}
+
+/* ======================= Member page ======================= */
+function viewMember(id){
+  const m=S.memberById.get(id); if(!m) return '<div class="card">Member not found.</div>';
+  const h=health(m), today=todayISO();
+  const ts=(S.tasksBy.get(id)||[]).slice().sort((a,b)=>a.due_date<b.due_date?-1:a.due_date>b.due_date?1:a.seq-b.seq);
+  const palms=(S.palmsBy.get(id)||[]).slice().sort((a,b)=>a.period_to<b.period_to?1:-1);
+  return `<button class="btn ghost sm" data-act="back">← Back</button>
+  <h2 style="margin-top:12px">${esc(m.full_name)} ${hpill(h.status)}</h2>
+  <p class="muted" style="margin-top:-6px">${esc(chName(m.chapter_id))} · ${esc(m.category||'')} ${m.company?'· '+esc(m.company):''} · Track ${track(m)}${m.induction_date?' · Month '+monthNo(m):''}${m.status!=='active'?' · <b>'+esc(m.status)+'</b>':''}</p>
+
+  <div class="card">
+    <b>Health Score</b>
+    <table class="t" style="margin-top:8px"><tbody>
+    ${h.signals.map(s=>`<tr><td>${esc(s.label)}${s.note?`<div class="small muted">${esc(s.note)}</div>`:''}</td><td class="num">${esc(s.value)}</td><td style="width:90px">${hpill(s.level)}</td></tr>`).join('')}
+    </tbody></table>
+  </div>
+
+  <div class="card">
+    <b>Details</b>
+    <form id="memForm" data-id="${m.id}">
+      <div class="grid2">
+        <div><label class="f">Personal mentor</label><input type="text" name="mentor_name" value="${esc(m.mentor_name||'')}" list="peopleList"></div>
+        <div><label class="f">Mentor mobile</label><input type="tel" name="mentor_mobile" value="${esc(m.mentor_mobile||'')}"></div>
+        <div><label class="f">Power Team</label><input type="text" name="power_team" value="${esc(m.power_team||'')}"></div>
+        <div><label class="f">Member mobile</label><input type="tel" name="mobile" value="${esc(m.mobile||'')}"></div>
+        <div><label class="f">Payment date</label><input type="date" name="payment_date" value="${esc(m.payment_date||'')}"></div>
+        <div><label class="f">Induction date</label><input type="date" name="induction_date" value="${esc(m.induction_date||'')}"></div>
+        ${isAdmin()?`<div><label class="f">Status</label><select name="status">${['active','renewed','left'].map(s=>`<option ${m.status===s?'selected':''}>${s}</option>`).join('')}</select></div>
+        <div><label class="f">Reason (if left)</label><input type="text" name="status_reason" value="${esc(m.status_reason||'')}"></div>`:''}
+      </div>
+      <label class="f">Notes</label><textarea name="notes">${esc(m.notes||'')}</textarea>
+      <datalist id="peopleList">${S.people.filter(p=>p.chapter_id===m.chapter_id).map(p=>`<option value="${esc(p.name)}">`).join('')}</datalist>
+      <div class="row" style="margin-top:12px"><button class="btn" type="submit">Save details</button>
+        ${isAdmin()?'<button class="btn ghost" type="button" data-act="deleteMember" data-id="'+m.id+'">Delete member</button>':''}</div>
+      <p class="small muted">Changing the mentor, Power Team or dates updates the journey automatically.</p>
+    </form>
+  </div>
+
+  <h3>Journey (${ts.filter(t=>t.status==='done').length}/${ts.length} done)</h3>
+  <div class="card"><div class="tl">
+  ${ts.map(t=>{
+    const cls=t.status==='done'?'done':t.status==='na'?'na':(t.due_date<today?'over':'');
+    return `<div class="it ${cls}">
+      <div class="row"><div class="grow"><b>${esc(t.title)}</b>${t.is_catchup?' <span class="pill n">catch-up</span>':''}
+        <div class="small muted">${esc(ownerName(t,m))} · due ${fmt(t.due_date)}</div>
+        ${t.status==='done'?`<div class="small" style="color:var(--g)">Done by ${esc(t.done_by||'-')} on ${fmt(t.done_on)}${t.rating?' · rating '+t.rating+'/5':''}</div>`:''}
+        ${t.status==='na'?`<div class="small muted">Not applicable (${esc(t.done_by||'')})</div>`:''}
+        ${t.note?`<div class="small">“${esc(t.note)}”</div>`:''}
+      </div>
+      ${t.status==='open'?`<div class="row"><button class="btn sm ok" data-act="done" data-id="${t.id}">Done</button><button class="btn ghost sm" data-act="na" data-id="${t.id}">N/A</button></div>`
+        :`<button class="btn ghost sm" data-act="reopen" data-id="${t.id}">Undo</button>`}
+      </div></div>`;}).join('') || '<div class="muted">No tasks yet. Add a payment or induction date.</div>'}
+  </div></div>
+
+  <h3>PALMS history</h3>
+  ${palms.length?`<div class="tw"><table class="t"><thead><tr><th>Period</th><th class="num">P</th><th class="num">A</th><th class="num">1-2-1</th><th class="num">Ref given</th><th class="num">Ref received</th></tr></thead><tbody>
+  ${palms.map(p=>`<tr><td>${fmtS(p.period_from)} to ${fmt(p.period_to)}</td><td class="num">${p.p}</td><td class="num">${p.a}</td><td class="num">${Number(p.one2one)}</td><td class="num">${p.rgi+p.rgo}</td><td class="num">${p.rri+p.rro}</td></tr>`).join('')}
+  </tbody></table></div>`:'<div class="card muted">No PALMS linked to this member yet.</div>'}`;
+}
+
+/* ======================= Dashboard (chapter) ======================= */
+function viewDash(){
+  const today=todayISO(), mem=activeMembers(), ids=new Set(mem.map(m=>m.id));
+  const ts=scoped(S.tasks).filter(t=>ids.has(t.member_id));
+  const c=completion(ts,today), overdue=ts.filter(t=>t.status==='open'&&t.due_date<today).length;
+  const hc={green:0,amber:0,red:0,nodata:0}; mem.forEach(m=>hc[health(m).status]++);
+  const byRole=new Map(); ts.forEach(t=>{ if(!byRole.has(t.owner_role)) byRole.set(t.owner_role,[]); byRole.get(t.owner_role).push(t); });
+  const mentors=new Map(); mem.forEach(m=>{ const k=m.mentor_name||'(no mentor)'; if(!mentors.has(k)) mentors.set(k,{mentees:[],over:0}); const e=mentors.get(k); e.mentees.push(m);
+    e.over+=(S.tasksBy.get(m.id)||[]).filter(t=>t.status==='open'&&t.due_date<today&&t.owner_role.startsWith('Mentor')).length; });
+  const renew=mem.filter(m=>m.induction_date).map(m=>({m, due:addDays(m.induction_date,365)})).filter(x=>x.due<=addDays(today,90)).sort((a,b)=>a.due<b.due?-1:1);
+  const single=S.chapterSel!=='all';
+  const lastMonth=monthStart(addDays(monthStart(today),-1));
+  const reviews=single?S.sdc.filter(r=>r.chapter_id===Number(S.chapterSel)).sort((a,b)=>a.review_month<b.review_month?1:-1):[];
+  const tot=mem.length||1;
+  return `<h2>Dashboard${single?' · '+esc(chName(Number(S.chapterSel))):' · all chapters'}</h2>
+  <div class="kpis">
+    <div class="kpi"><div class="v">${mem.length}</div><div class="l">First-year members</div></div>
+    <div class="kpi"><div class="v">${c.pct===null?'-':c.pct+'%'}</div><div class="l">Tasks done on time (due so far)</div></div>
+    <div class="kpi"><div class="v" style="color:${overdue?'var(--r)':'inherit'}">${overdue}</div><div class="l">Overdue tasks</div></div>
+    <div class="kpi"><div class="v" style="color:${hc.red?'var(--r)':'inherit'}">${hc.red}</div><div class="l">Red members</div></div>
+  </div>
+  <div class="card">
+    <div class="row small" style="margin-bottom:6px"><b class="grow">Health mix</b>
+      <span><span class="dot green"></span> ${hc.green}</span><span><span class="dot amber"></span> ${hc.amber}</span><span><span class="dot red"></span> ${hc.red}</span><span><span class="dot nodata"></span> ${hc.nodata}</span></div>
+    <div class="mix"><i style="width:${hc.green*100/tot}%;background:var(--g)"></i><i style="width:${hc.amber*100/tot}%;background:var(--a)"></i><i style="width:${hc.red*100/tot}%;background:var(--r)"></i><i style="width:${hc.nodata*100/tot}%;background:#c4c4c9"></i></div>
+  </div>
+
+  <h3>Completion by role</h3>
+  <div class="tw"><table class="t"><thead><tr><th>Role</th><th class="num">Due so far</th><th class="num">Done</th><th class="num">Overdue</th><th class="num">Done %</th></tr></thead><tbody>
+  ${[...byRole.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(([r,list])=>{ const cc=completion(list,today); const o=list.filter(t=>t.status==='open'&&t.due_date<today).length;
+    return `<tr><td>${esc(r)}</td><td class="num">${cc.total}</td><td class="num">${cc.done}</td><td class="num">${o?'<span class="flag">'+o+'</span>':0}</td><td class="num">${cc.pct===null?'-':cc.pct+'%'}</td></tr>`;}).join('')||'<tr><td colspan="5" class="muted">No tasks yet</td></tr>'}
+  </tbody></table></div>
+
+  <h3>Mentors</h3>
+  <div class="tw"><table class="t"><thead><tr><th>Mentor</th><th>Mentees</th><th class="num">Overdue mentor tasks</th><th>Action</th></tr></thead><tbody>
+  ${[...mentors.entries()].sort((a,b)=>b[1].over-a[1].over).map(([k,e])=>`<tr><td>${esc(k)}</td><td>${e.mentees.map(x=>esc(x.full_name)).join(', ')}</td><td class="num">${e.over}</td>
+    <td>${k==='(no mentor)'?'<span class="flag">Assign a mentor</span>':e.over>=4?'<span class="flag">Reassign mentee</span>':e.over>=2?'<span style="color:var(--a);font-weight:700">CMC to call</span>':'<span class="muted">On track</span>'}</td></tr>`).join('')||'<tr><td colspan="4" class="muted">No members</td></tr>'}
+  </tbody></table></div>
+
+  <h3>Renewals due in the next 90 days</h3>
+  ${renew.length?`<div class="tw"><table class="t"><thead><tr><th>Member</th><th>Renewal date</th><th>Health</th></tr></thead><tbody>
+    ${renew.map(x=>`<tr><td><a href="#" data-act="openMember" data-id="${x.m.id}">${esc(x.m.full_name)}</a>${single?'':' <span class="muted small">'+esc(chName(x.m.chapter_id))+'</span>'}</td><td>${fmt(x.due)}</td><td>${hpill(health(x.m).status)}</td></tr>`).join('')}
+  </tbody></table></div>`:'<div class="card muted">None in the next 90 days.</div>'}
+
+  ${single?`<h3>SDC monthly review</h3>
+  <div class="card">
+    <div class="row"><div class="grow">Review of <b>${MON[+lastMonth.slice(5,7)-1]} ${lastMonth.slice(0,4)}</b>: ${reviews.some(r=>r.review_month===lastMonth)?'<span class="pill g">Logged</span>':'<span class="pill r">Not logged</span>'}</div>
+    <button class="btn sm" data-act="logReview" data-month="${lastMonth}">Log SDC review</button></div>
+    ${reviews.length?`<table class="t" style="margin-top:10px"><thead><tr><th>Month</th><th>Reviewed by</th><th class="num">Completion</th><th>Notes</th></tr></thead><tbody>
+      ${reviews.slice(0,6).map(r=>`<tr><td>${MON[+r.review_month.slice(5,7)-1]} ${r.review_month.slice(0,4)}</td><td>${esc(r.reviewed_by)}</td><td class="num">${r.completion_pct==null?'-':Math.round(r.completion_pct)+'%'}</td><td>${esc(r.notes||'')}</td></tr>`).join('')}</tbody></table>`:''}
+  </div>`:''}`;
+}
+
+/* ======================= Region ======================= */
+function monthCompletion(chId, ms){
+  const me=addDays(monthStart(addDays(ms,32)),-1);
+  const ts=S.tasks.filter(t=>t.chapter_id===chId && t.status!=='na' && t.due_date>=ms && t.due_date<=me && S.memberById.get(t.member_id)?.status==='active');
+  const done=ts.filter(t=>t.status==='done').length; return ts.length?Math.round(done*100/ts.length):null;
+}
+function viewRegion(){
+  const today=todayISO(), m1=monthStart(addDays(monthStart(today),-1)), m2=monthStart(addDays(m1,-1));
+  const rows=S.chapters.map(ch=>{
+    const mem=S.members.filter(m=>m.chapter_id===ch.id&&m.status==='active'); const ids=new Set(mem.map(m=>m.id));
+    const ts=S.tasks.filter(t=>ids.has(t.member_id)); const hc={green:0,amber:0,red:0,nodata:0}; mem.forEach(m=>hc[health(m).status]++);
+    const p1=monthCompletion(ch.id,m1), p2=monthCompletion(ch.id,m2);
+    return {ch, n:mem.length, hc, now:completion(ts,today).pct, p1, p2, over:ts.filter(t=>t.status==='open'&&t.due_date<today).length,
+      flag: p1!==null&&p2!==null&&p1<70&&p2<70, reviewed:S.sdc.some(r=>r.chapter_id===ch.id&&r.review_month===m1)};
+  }).sort((a,b)=>(b.now??-1)-(a.now??-1));
+  const reds=S.members.filter(m=>m.status==='active'&&health(m).status==='red');
+  const matured=S.members.filter(m=>m.induction_date && addDays(m.induction_date,365)<=today && m.status!=='active');
+  const renewed=matured.filter(m=>m.status==='renewed').length;
+  const all=S.members.filter(m=>m.status==='active');
+  const allTs=S.tasks.filter(t=>S.memberById.get(t.member_id)?.status==='active');
+  const reg=completion(allTs,today);
+  const ml=(ms)=>MON[+ms.slice(5,7)-1];
+  return `<h2>Region Dashboard</h2>
+  <div class="kpis">
+    <div class="kpi"><div class="v">${all.length}</div><div class="l">First-year members</div></div>
+    <div class="kpi"><div class="v">${reg.pct===null?'-':reg.pct+'%'}</div><div class="l">Tasks done (due so far)</div></div>
+    <div class="kpi"><div class="v" style="color:${reds.length?'var(--r)':'inherit'}">${reds.length}</div><div class="l">Red members</div></div>
+    <div class="kpi"><div class="v">${matured.length?Math.round(renewed*100/matured.length)+'%':'-'}</div><div class="l">Renewal rate (${renewed}/${matured.length} marked)</div></div>
+  </div>
+  <h3>Chapters</h3>
+  <div class="tw"><table class="t"><thead><tr><th>Chapter</th><th class="num">Members</th><th>Health</th><th class="num">Done now</th><th class="num">${ml(m1)}</th><th class="num">${ml(m2)}</th><th class="num">Overdue</th><th>SDC review ${ml(m1)}</th></tr></thead><tbody>
+  ${rows.map(r=>`<tr><td><a href="#" data-act="pickChapter" data-id="${r.ch.id}">${esc(r.ch.name.replace(/^BNI /,''))}</a>${r.flag?'<div class="flag small">Below 70% two months: SDC meets ED</div>':''}</td>
+    <td class="num">${r.n}</td>
+    <td style="min-width:110px"><div class="mix" title="G ${r.hc.green} / A ${r.hc.amber} / R ${r.hc.red}">${r.n?`<i style="width:${r.hc.green*100/r.n}%;background:var(--g)"></i><i style="width:${r.hc.amber*100/r.n}%;background:var(--a)"></i><i style="width:${r.hc.red*100/r.n}%;background:var(--r)"></i><i style="width:${r.hc.nodata*100/r.n}%;background:#c4c4c9"></i>`:''}</div>
+      <div class="small muted">${r.hc.red} red · ${r.hc.amber} amber</div></td>
+    <td class="num">${r.now===null?'-':r.now+'%'}</td><td class="num ${r.p1!==null&&r.p1<70?'flag':''}">${r.p1===null?'-':r.p1+'%'}</td><td class="num ${r.p2!==null&&r.p2<70?'flag':''}">${r.p2===null?'-':r.p2+'%'}</td>
+    <td class="num">${r.over}</td><td>${r.reviewed?'<span class="pill g">Yes</span>':'<span class="pill r">No</span>'}</td></tr>`).join('')}
+  </tbody></table></div>
+  <h3>Red members across the region (${reds.length})</h3>
+  ${reds.length?reds.map(m=>`<div class="card mcard" data-act="openMember" data-id="${m.id}"><div class="row"><span class="dot red"></span><b class="grow">${esc(m.full_name)}</b><span class="small muted">${esc(chName(m.chapter_id))}</span></div>
+    <div class="small" style="margin-top:4px">${health(m).reasons.map(esc).join(' · ')}</div></div>`).join(''):'<div class="card empty">No red members right now.</div>'}`;
+}
+
+/* ======================= Settings / leaders ======================= */
+function viewSettings(){
+  const single=S.chapterSel!=='all';
+  if(!single) return '<h2>Chapter leaders</h2><div class="card">Pick a chapter at the top to manage its leaders.</div>';
+  const ch=Number(S.chapterSel); const ppl=S.people.filter(p=>p.chapter_id===ch);
+  return `<h2>Chapter leaders · ${esc(chName(ch))}</h2>
+  <p class="muted">These names appear in the "Done by" list. Update them at every term handover.</p>
+  <form id="personForm" class="card"><div class="grid2">
+    <div><label class="f">Name</label><input type="text" name="name" required></div>
+    <div><label class="f">Role</label><select name="role">${['President','Vice President','Secretary/Treasurer','CMC','Mentor','Power Team coordinator','Membership Committee','SDC','Support Ambassador','Support DC','Other'].map(r=>`<option>${r}</option>`).join('')}</select></div>
+  </div><div style="margin-top:12px"><button class="btn" type="submit">Add leader</button></div></form>
+  ${ppl.length?`<div class="tw"><table class="t"><thead><tr><th>Name</th><th>Role</th><th></th></tr></thead><tbody>${ppl.map(p=>`<tr><td>${esc(p.name)}</td><td>${esc(p.role||'')}</td><td style="text-align:right"><button class="btn ghost sm" data-act="delPerson" data-id="${p.id}">Remove</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="card muted">No leaders added yet.</div>'}`;
+}
+
+/* ======================= Admin ======================= */
+function viewAdmin(){
+  return `<h2>Admin</h2>
+  <div class="card"><b>1. Add one member</b>
+    <form id="addForm"><div class="grid2">
+      <div><label class="f">Full name (as in BNI Connect)</label><input type="text" name="full_name" required></div>
+      <div><label class="f">Chapter</label><select name="chapter_id" required>${S.chapters.map(c=>`<option value="${c.id}" ${String(c.id)===S.chapterSel?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div>
+      <div><label class="f">Business category</label><input type="text" name="category"></div>
+      <div><label class="f">Company</label><input type="text" name="company"></div>
+      <div><label class="f">Mobile</label><input type="tel" name="mobile"></div>
+      <div><label class="f">Payment date</label><input type="date" name="payment_date"></div>
+      <div><label class="f">Induction date (blank if not yet inducted)</label><input type="date" name="induction_date"></div>
+      <div><label class="f">Personal mentor</label><input type="text" name="mentor_name"></div>
+    </div><div style="margin-top:12px"><button class="btn" type="submit">Add member</button></div></form>
+  </div>
+
+  <div class="card"><b>2. Import members from the Excel template</b>
+    <p class="small muted">Use "BNI_TNT_New_Member_Data_Template.xlsx". Members already in the app (same chapter + name) are skipped.</p>
+    <input type="file" id="impFile" accept=".xlsx,.xls,.csv">
+    <div id="impPreview"></div>
+  </div>
+
+  <div class="card"><b>3. Upload PALMS (monthly)</b>
+    <p class="small muted">BNI Connect → Chapter → Summary PALMS Report → one chapter, one calendar month → Export. Upload one file per chapter.</p>
+    <input type="file" id="palmsFile" accept=".xls,.xlsx">
+    <div id="palmsPreview"></div>
+    ${palmsUploadsTable()}
+  </div>
+
+  <div class="card"><b>4. Chapter logins</b>
+    <p class="small muted">Username = the short name. Reset every password at each leadership handover.</p>
+    <div id="loginsBox"><span class="spin"></span></div>
+  </div>
+
+  <div class="card"><b>5. Telegram and settings</b>
+    <form id="cfgForm"><div class="grid2">
+      <div><label class="f">App link (sent in Telegram messages)</label><input type="text" name="app_url" value="${esc(S.config.app_url||'')}" placeholder="https://bni-tnt-journey.vercel.app"></div>
+      <div><label class="f">Region chat id (monthly summary + tests)</label><input type="text" name="region_chat_id" value="${esc(S.config.region_chat_id||'')}"></div>
+    </div>
+    <label class="f">HT group chat id per chapter</label>
+    <div class="tw"><table class="t"><tbody>${S.chapters.map(c=>`<tr><td>${esc(c.name)}</td><td><input type="text" name="tg_${c.id}" value="${esc(c.telegram_chat_id||'')}"></td></tr>`).join('')}</tbody></table></div>
+    <div class="row"><button class="btn" type="submit">Save settings</button></div></form>
+    <div class="row" style="margin-top:14px">
+      <button class="btn ghost sm" data-act="cron" data-mode="weekly" data-dry="1">Send TEST weekly lists to region chat</button>
+      <button class="btn ghost sm" data-act="cron" data-mode="weekly">Send weekly lists to HT groups now</button>
+      <button class="btn ghost sm" data-act="cron" data-mode="daily">Run health check + red alerts now</button>
+      <button class="btn ghost sm" data-act="cron" data-mode="monthly">Send monthly summary now</button>
+    </div>
+    <pre id="cronOut" class="small" style="white-space:pre-wrap;margin:10px 0 0"></pre>
+  </div>
+
+  <div class="card"><b>6. Export</b>
+    <div class="row" style="margin-top:8px"><button class="btn ghost" data-act="export">Download all tasks (CSV)</button></div>
+  </div>`;
+}
+function palmsUploadsTable(){
+  const ups=new Map(); S.palms.forEach(p=>{ const k=p.upload_id; if(!ups.has(k)) ups.set(k,{chapter_id:p.chapter_id, from:p.period_from, to:p.period_to, n:0, linked:0}); const u=ups.get(k); u.n++; if(p.member_id) u.linked++; });
+  const list=[...ups.entries()].sort((a,b)=>a[1].to<b[1].to?1:-1).slice(0,40);
+  if(!list.length) return '<p class="small muted">No PALMS uploaded yet.</p>';
+  return `<div class="tw" style="margin-top:10px"><table class="t"><thead><tr><th>Chapter</th><th>Period</th><th class="num">Rows</th><th class="num">Linked to first-year members</th></tr></thead><tbody>
+    ${list.map(([id,u])=>`<tr><td>${esc(chName(u.chapter_id))}</td><td>${fmtS(u.from)} to ${fmt(u.to)}</td><td class="num">${u.n}</td><td class="num">${u.linked}</td></tr>`).join('')}</tbody></table></div>`;
+}
+async function adminAfterRender(){
+  $('#impFile').onchange=onImportFile;
+  $('#palmsFile').onchange=onPalmsFile;
+  try{
+    const r=await api('/api/admin-users',{action:'list'});
+    $('#loginsBox').innerHTML=`<div class="tw"><table class="t"><thead><tr><th>Chapter</th><th>Username</th><th>Status</th><th>Set new password</th></tr></thead><tbody>
+      ${r.chapters.map(c=>`<tr><td>${esc(c.name)}</td><td><code>${esc(c.login)}</code></td><td>${c.exists?'<span class="pill g">Active</span>':'<span class="pill n">Not created</span>'}${c.last_sign_in_at?'<div class="small muted">last login '+fmt(c.last_sign_in_at)+'</div>':''}</td>
+      <td><div class="row"><input type="text" id="pw_${c.id}" placeholder="min 8 characters" style="flex:1;min-width:120px"><button class="btn sm" data-act="setpw" data-id="${c.id}">${c.exists?'Reset':'Create'}</button></div></td></tr>`).join('')}</tbody></table></div>`;
+  }catch(e){ $('#loginsBox').innerHTML='<div class="warn">'+esc(e.message)+'</div>'; }
+}
+async function api(path, body){
+  const {data}=await S.sb.auth.getSession();
+  const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+data.session.access_token},body:JSON.stringify(body||{})});
+  const j=await r.json().catch(()=>({error:'Bad response'})); if(!r.ok) throw new Error(j.error||('HTTP '+r.status)); return j;
+}
+
+/* ---- import members ---- */
+let IMPORT=null;
+function readSheet(file){
+  return new Promise((res,rej)=>{ const fr=new FileReader(); fr.onload=()=>{ try{ const wb=XLSX.read(fr.result,{type:'array',cellDates:false}); res(wb);}catch(e){rej(e);} }; fr.onerror=rej; fr.readAsArrayBuffer(file); });
+}
+async function onImportFile(e){
+  const file=e.target.files[0]; if(!file) return;
+  const box=$('#impPreview'); box.innerHTML='<span class="spin"></span>';
+  try{
+    const wb=await readSheet(file);
+    const ws=wb.Sheets['Members']||wb.Sheets[wb.SheetNames[0]];
+    const rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:''});
+    const hdr=rows[0].map(h=>String(h).trim().toLowerCase()); const col=(n)=>hdr.indexOf(n);
+    const need=['member name','chapter']; for(const n of need) if(col(n)<0) throw new Error('Missing column "'+n+'" in the first row');
+    const g=(r,n)=>{ const i=col(n); return i<0?'':r[i]; };
+    const existing=new Set(S.members.map(m=>m.chapter_id+'|'+Palms.norm(m.full_name)));
+    const out=[]; const errs=[]; const seen=new Set();
+    rows.slice(1).forEach((r,i)=>{
+      const name=String(g(r,'member name')).trim(); if(!name || /^example/i.test(name)) return;
+      const chRaw=String(g(r,'chapter')).trim(); const ch=S.chapters.find(c=>Palms.norm(c.name)===Palms.norm(chRaw)||Palms.norm(c.name)===Palms.norm('bni '+chRaw));
+      const row={full_name:name, chapter_id:ch?ch.id:null, category:String(g(r,'business category')).trim()||null, company:String(g(r,'company name')).trim()||null,
+        mobile:String(g(r,'mobile')).trim()||null, payment_date:Palms.toISO(g(r,'payment date')), induction_date:Palms.toISO(g(r,'induction date')),
+        mentor_name:String(g(r,'personal mentor')).trim()||null, mentor_mobile:String(g(r,'mentor mobile')).trim()||null, power_team:String(g(r,'power team')).trim()||null, notes:String(g(r,'notes')).trim()||null};
+      const line=i+2; const probs=[];
+      if(!ch) probs.push('unknown chapter "'+chRaw+'"');
+      if(g(r,'payment date')!=='' && !row.payment_date) probs.push('bad payment date');
+      if(g(r,'induction date')!=='' && !row.induction_date) probs.push('bad induction date');
+      if(!row.payment_date && !row.induction_date) probs.push('needs an induction or payment date');
+      const key=row.chapter_id+'|'+Palms.norm(name);
+      row._dup = existing.has(key) || seen.has(key); seen.add(key);
+      if(probs.length) errs.push('Row '+line+' ('+name+'): '+probs.join(', ')); else out.push(row);
+    });
+    IMPORT=out.filter(r=>!r._dup);
+    const dups=out.length-IMPORT.length;
+    box.innerHTML=`<div style="margin-top:10px">
+      ${errs.length?`<div class="warn"><b>${errs.length} row(s) need fixing</b> (they will be skipped):<br>${errs.map(esc).join('<br>')}</div>`:''}
+      <p><b>${IMPORT.length}</b> new member(s) ready${dups?`, <b>${dups}</b> already in the app (skipped)`:''}.
+      Track A: ${IMPORT.filter(r=>!r.induction_date||r.induction_date>=goLive()).length} · Track B: ${IMPORT.filter(r=>r.induction_date&&r.induction_date<goLive()).length}</p>
+      ${IMPORT.length?`<div class="tw"><table class="t"><thead><tr><th>Name</th><th>Chapter</th><th>Induction</th><th>Mentor</th></tr></thead><tbody>${IMPORT.slice(0,200).map(r=>`<tr><td>${esc(r.full_name)}</td><td>${esc(chName(r.chapter_id))}</td><td>${fmt(r.induction_date)}</td><td>${esc(r.mentor_name||'')}</td></tr>`).join('')}</tbody></table></div>
+      <button class="btn" data-act="doImport">Import ${IMPORT.length} member(s)</button>`:''}</div>`;
+  }catch(err){ box.innerHTML='<div class="warn">'+esc(err.message)+'</div>'; }
+}
+async function doImport(btn){
+  btn.disabled=true; btn.textContent='Importing…';
+  const rows=IMPORT.map(({_dup,...r})=>r);
+  for(let i=0;i<rows.length;i+=100){ const {error}=await S.sb.from('members').insert(rows.slice(i,i+100)); if(error){ toast(error.message,true); btn.disabled=false; return; } }
+  toast(rows.length+' member(s) imported'); IMPORT=null; await loadData(); render();
+}
+
+/* ---- PALMS upload ---- */
+let PALMS_UP=null;
+async function onPalmsFile(e){
+  const file=e.target.files[0]; if(!file) return;
+  const box=$('#palmsPreview'); box.innerHTML='<span class="spin"></span>';
+  try{
+    const wb=await readSheet(file);
+    const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,raw:true,defval:''});
+    const p=Palms.parsePalms(rows);
+    if(p.errors.length) throw new Error(p.errors.join(' '));
+    const ch=S.chapters.find(c=>Palms.norm(c.name)===Palms.norm(p.chapter));
+    if(!ch) throw new Error('This file is for "'+p.chapter+'", which is not one of the 14 chapters in the app. Use the Chapter Summary PALMS Report.');
+    const span=daysBetween(p.from,p.to);
+    const pool=S.members.filter(m=>m.chapter_id===ch.id);
+    const links=S.links.filter(l=>l.chapter_id===ch.id);
+    p.members.forEach(r=>{ const mm=Palms.matchMember(r.palms_name, pool, links); r.member_id=mm?mm.member_id:null; r.how=mm?mm.how:null; });
+    const matchedIds=new Set(p.members.filter(r=>r.member_id).map(r=>r.member_id));
+    const missing=pool.filter(m=>m.status==='active'&&!matchedIds.has(m.id));
+    PALMS_UP={file:file.name, chapter:ch, p};
+    box.innerHTML=`<div style="margin-top:10px">
+      ${span>35?`<div class="warn">This file covers ${span+1} days (${fmtS(p.from)} to ${fmt(p.to)}). The Health Score only uses one-month files. Please export one calendar month.</div>`:''}
+      <p><b>${esc(ch.name)}</b> · ${fmtS(p.from)} to ${fmt(p.to)} · ${p.members.length} members in file · <b>${p.members.filter(r=>r.member_id).length}</b> matched to first-year members.</p>
+      ${missing.length?`<div class="warn"><b>${missing.length} first-year member(s) not found in this file.</b> Link them below if their BNI Connect name is spelled differently:
+        ${missing.map(m=>`<div class="row" style="margin-top:6px"><span class="grow">${esc(m.full_name)}</span>
+          <select data-link="${m.id}" style="max-width:260px"><option value="">Not in this file</option>${p.members.filter(r=>!r.member_id).map((r,i)=>`<option value="${esc(r.palms_name)}">${esc(r.palms_name)}</option>`).join('')}</select></div>`).join('')}</div>`:''}
+      <button class="btn" data-act="savePalms" ${span>35?'disabled':''}>Save PALMS for ${esc(ch.name)}</button></div>`;
+  }catch(err){ box.innerHTML='<div class="warn">'+esc(err.message)+'</div>'; PALMS_UP=null; }
+}
+async function savePalms(btn){
+  if(!PALMS_UP) return; btn.disabled=true; btn.textContent='Saving…';
+  const {chapter:ch,p,file}=PALMS_UP;
+  try{
+    // manual links chosen in the preview
+    const newLinks=[];
+    document.querySelectorAll('select[data-link]').forEach(sel=>{ if(sel.value){ const mid=Number(sel.dataset.link); newLinks.push({chapter_id:ch.id, palms_name:sel.value, member_id:mid});
+      const r=p.members.find(x=>x.palms_name===sel.value); if(r){ r.member_id=mid; r.how='linked'; } } });
+    if(newLinks.length){ const {error}=await S.sb.from('palms_links').upsert(newLinks,{onConflict:'chapter_id,palms_name'}); if(error) throw error; }
+    // replace an earlier upload of the same period
+    await S.sb.from('palms_uploads').delete().eq('chapter_id',ch.id).eq('period_from',p.from).eq('period_to',p.to);
+    const {data:up,error:e1}=await S.sb.from('palms_uploads').insert({chapter_id:ch.id, period_from:p.from, period_to:p.to, file_name:file, uploaded_by:S.session.user.id}).select().single();
+    if(e1) throw e1;
+    const rows=p.members.map(r=>({upload_id:up.id, chapter_id:ch.id, palms_name:r.palms_name, member_id:r.member_id||null, p:r.p,a:r.a,l:r.l,m:r.m,s:r.s,rgi:r.rgi,rgo:r.rgo,rri:r.rri,rro:r.rro,v:r.v,one2one:r.one2one,tyfcb:r.tyfcb,ceu:r.ceu}));
+    for(let i=0;i<rows.length;i+=200){ const {error}=await S.sb.from('palms_rows').insert(rows.slice(i,i+200)); if(error) throw error; }
+    // PALMS proves first referral passed / received
+    const gave=p.members.filter(r=>r.member_id&&(r.rgi+r.rgo)>0).map(r=>r.member_id);
+    const got=p.members.filter(r=>r.member_id&&(r.rri+r.rro)>0).map(r=>r.member_id);
+    const stamp={status:'done', done_by:'PALMS', done_on:p.to};
+    if(gave.length) await S.sb.from('tasks').update(stamp).in('member_id',gave).eq('template_code','A19').eq('status','open');
+    if(got.length) await S.sb.from('tasks').update(stamp).in('member_id',got).eq('template_code','A20').eq('status','open');
+    toast('PALMS saved for '+ch.name); PALMS_UP=null; await loadData(); render();
+  }catch(err){ toast(err.message,true); btn.disabled=false; btn.textContent='Save PALMS'; }
+}
+
+/* ======================= modals ======================= */
+function modal(html){ $('#modalRoot').innerHTML=`<div class="modal-bg" data-act="closeModal"><div class="modal">${html}</div></div>`; }
+function closeModal(){ $('#modalRoot').innerHTML=''; }
+function doneModal(taskId, mode){
+  const t=S.tasks.find(x=>x.id===taskId), m=S.memberById.get(t.member_id), tpl=S.templates.find(x=>x.code===t.template_code)||{};
+  const ppl=S.people.filter(p=>p.chapter_id===t.chapter_id);
+  const na=mode==='na';
+  modal(`<h3 style="margin-top:0">${na?'Mark not applicable':'Mark done'}</h3>
+  <p style="margin-top:-4px"><b>${esc(m.full_name)}</b><br>${esc(t.title)}</p>
+  <form id="doneForm" data-id="${t.id}" data-mode="${mode}">
+    <label class="f">${na?'Decided by':'Done by'} *</label>
+    <select name="who_sel"><option value="">Choose…</option>${ppl.map(p=>`<option>${esc(p.name)}</option>`).join('')}${m.mentor_name&&!ppl.some(p=>p.name===m.mentor_name)?`<option>${esc(m.mentor_name)}</option>`:''}<option value="__other">Someone else (type name)</option></select>
+    <input type="text" name="who_txt" placeholder="Type the name" class="hidden" style="margin-top:6px">
+    ${na?'':`<label class="f">Date</label><input type="date" name="done_on" value="${todayISO()}" max="${todayISO()}">`}
+    ${!na&&tpl.needs_rating?`<label class="f">How does the member rate BNI so far? *</label>
+      <div class="stars">${[1,2,3,4,5].map(i=>`<button type="button" data-star="${i}">${i}</button>`).join('')}</div><input type="hidden" name="rating">`:''}
+    <label class="f">${na?'Reason *':(tpl.needs_note?'Note (one line) *':'Note (optional)')}</label>
+    <textarea name="note" ${na||tpl.needs_note?'required':''}></textarea>
+    <p class="small muted">${ppl.length?'':'Tip: add your chapter leaders in Settings so names appear in the list.'}</p>
+    <div class="row" style="margin-top:12px"><button class="btn ${na?'':'ok'}" type="submit">${na?'Mark N/A':'Save'}</button><button class="btn ghost" type="button" data-act="closeModal">Cancel</button></div>
+  </form>`);
+  const f=$('#doneForm');
+  f.who_sel.onchange=()=>f.who_txt.classList.toggle('hidden', f.who_sel.value!=='__other');
+  f.querySelectorAll('[data-star]').forEach(b=>b.onclick=()=>{ f.querySelectorAll('[data-star]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); f.rating.value=b.dataset.star; });
+}
+async function submitDone(f){
+  const id=Number(f.dataset.id), na=f.dataset.mode==='na';
+  const who=f.who_sel.value==='__other'?f.who_txt.value.trim():f.who_sel.value;
+  if(!who){ toast('Please choose who did it',true); return; }
+  const upd={status:na?'na':'done', done_by:who, done_on:na?todayISO():(f.done_on.value||todayISO()), note:f.note.value.trim()||null};
+  if(f.rating){ if(!f.rating.value){ toast('Please pick a rating from 1 to 5',true); return; } upd.rating=Number(f.rating.value); }
+  const {error}=await S.sb.from('tasks').update(upd).eq('id',id);
+  if(error){ toast(error.message,true); return; }
+  Object.assign(S.tasks.find(t=>t.id===id), upd); index(); closeModal(); render(); toast(na?'Marked not applicable':'Done. Thank you!');
+}
+function reviewModal(month){
+  const ch=Number(S.chapterSel); const pc=monthCompletion(ch, month);
+  modal(`<h3 style="margin-top:0">SDC review · ${MON[+month.slice(5,7)-1]} ${month.slice(0,4)}</h3>
+  <p>Task completion for that month: <b>${pc===null?'no tasks due':pc+'%'}</b></p>
+  <form id="reviewForm" data-month="${month}">
+    <label class="f">Reviewed by (SDC name) *</label><input type="text" name="reviewed_by" required>
+    <label class="f">Notes and actions agreed</label><textarea name="notes"></textarea>
+    <div class="row" style="margin-top:12px"><button class="btn" type="submit">Log review</button><button class="btn ghost" type="button" data-act="closeModal">Cancel</button></div>
+  </form>`);
+}
+
+/* ======================= events ======================= */
+document.addEventListener('click', async (e)=>{
+  const el=e.target.closest('[data-act]'); if(!el) return;
+  const act=el.dataset.act, id=Number(el.dataset.id);
+  if(act==='closeModal'){ if(e.target===el) closeModal(); return; }
+  e.preventDefault();
+  if(act==='openMember'){ S.memberOpen=id; render(); }
+  else if(act==='back'){ S.memberOpen=null; render(); }
+  else if(act==='done') doneModal(id,'done');
+  else if(act==='na') doneModal(id,'na');
+  else if(act==='reopen'){ const upd={status:'open',done_by:null,done_on:null,rating:null}; const {error}=await S.sb.from('tasks').update(upd).eq('id',id); if(error) return toast(error.message,true); Object.assign(S.tasks.find(t=>t.id===id),upd); index(); render(); }
+  else if(act==='toggleLater'){ S.filters.week.later=!S.filters.week.later; render(); }
+  else if(act==='pickChapter'){ S.chapterSel=String(id); $('#chapterSel').value=S.chapterSel; sessionStorageSet('chSel',S.chapterSel); S.tab='dash'; render(); }
+  else if(act==='logReview') reviewModal(el.dataset.month);
+  else if(act==='delPerson'){ const {error}=await S.sb.from('chapter_people').delete().eq('id',id); if(error) return toast(error.message,true); S.people=S.people.filter(p=>p.id!==id); render(); }
+  else if(act==='deleteMember'){ if(!confirm('Delete this member and all their tasks? This cannot be undone.')) return; const {error}=await S.sb.from('members').delete().eq('id',id); if(error) return toast(error.message,true); S.memberOpen=null; await loadData(); render(); toast('Member deleted'); }
+  else if(act==='doImport') doImport(el);
+  else if(act==='savePalms') savePalms(el);
+  else if(act==='setpw'){ const pw=$('#pw_'+id).value.trim(); if(pw.length<8) return toast('Password must be at least 8 characters',true);
+    el.disabled=true; try{ const r=await api('/api/admin-users',{action:'set_password',chapter_id:id,password:pw}); toast((r.created?'Login created for ':'Password reset for ')+r.login); adminAfterRender(); }catch(err){ toast(err.message,true); el.disabled=false; } }
+  else if(act==='cron'){ const out=$('#cronOut'); out.textContent='Running…'; try{ const r=await api('/api/cron',{mode:el.dataset.mode, dry_run:!!el.dataset.dry}); out.textContent=JSON.stringify(r,null,2); }catch(err){ out.textContent='Error: '+err.message; } }
+  else if(act==='export') exportCSV();
+});
+document.addEventListener('input', (e)=>{
+  const f=e.target.dataset.f; if(!f) return; const [a,b]=f.split('.'); S.filters[a][b]=e.target.value;
+  if(e.target.tagName==='SELECT') render(); else { clearTimeout(window._ft); window._ft=setTimeout(()=>{ const pos=e.target.selectionStart; render(); const el=document.querySelector(`[data-f="${f}"]`); if(el){ el.focus(); try{el.setSelectionRange(pos,pos);}catch(x){} } },250); }
+});
+document.addEventListener('submit', async (e)=>{
+  const f=e.target; if(!['memForm','personForm','addForm','doneForm','reviewForm','cfgForm'].includes(f.id)) return;
+  e.preventDefault();
+  const fd=Object.fromEntries(new FormData(f).entries());
+  const nul=(v)=>{ v=(v??'').trim(); return v===''?null:v; };
+  if(f.id==='doneForm') return submitDone(f);
+  if(f.id==='memForm'){
+    const upd={mentor_name:nul(fd.mentor_name),mentor_mobile:nul(fd.mentor_mobile),power_team:nul(fd.power_team),mobile:nul(fd.mobile),payment_date:nul(fd.payment_date),induction_date:nul(fd.induction_date),notes:nul(fd.notes)};
+    if(isAdmin()){ upd.status=fd.status; upd.status_reason=nul(fd.status_reason); }
+    const {error}=await S.sb.from('members').update(upd).eq('id',Number(f.dataset.id));
+    if(error) return toast(error.message,true);
+    await loadData(); render(); toast('Saved');
+  }
+  if(f.id==='personForm'){
+    const {data,error}=await S.sb.from('chapter_people').insert({chapter_id:Number(S.chapterSel),name:fd.name.trim(),role:fd.role}).select().single();
+    if(error) return toast(error.code==='23505'?'That name is already in the list':error.message,true);
+    S.people.push(data); render(); toast('Leader added');
+  }
+  if(f.id==='addForm'){
+    const row={full_name:fd.full_name.trim(),chapter_id:Number(fd.chapter_id),category:nul(fd.category),company:nul(fd.company),mobile:nul(fd.mobile),payment_date:nul(fd.payment_date),induction_date:nul(fd.induction_date),mentor_name:nul(fd.mentor_name)};
+    if(!row.payment_date&&!row.induction_date) return toast('Enter a payment date or an induction date',true);
+    const {error}=await S.sb.from('members').insert(row);
+    if(error) return toast(error.message,true);
+    await loadData(); render(); toast('Member added with their journey');
+  }
+  if(f.id==='reviewForm'){
+    const month=f.dataset.month, ch=Number(S.chapterSel);
+    const {error}=await S.sb.from('sdc_reviews').upsert({chapter_id:ch,review_month:month,reviewed_by:fd.reviewed_by.trim(),notes:nul(fd.notes),completion_pct:monthCompletion(ch,month)},{onConflict:'chapter_id,review_month'});
+    if(error) return toast(error.message,true);
+    closeModal(); await loadData(); render(); toast('Review logged');
+  }
+  if(f.id==='cfgForm'){
+    const cfg=[{key:'app_url',value:(fd.app_url||'').trim()},{key:'region_chat_id',value:(fd.region_chat_id||'').trim()}];
+    const {error}=await S.sb.from('app_config').upsert(cfg,{onConflict:'key'}); if(error) return toast(error.message,true);
+    for(const c of S.chapters){ const v=(fd['tg_'+c.id]||'').trim(); if(v!==(c.telegram_chat_id||'')){ const {error:e2}=await S.sb.from('chapters').update({telegram_chat_id:v||null}).eq('id',c.id); if(e2) return toast(e2.message,true); } }
+    await loadData(); render(); toast('Settings saved');
+  }
+});
+
+function exportCSV(){
+  const q=(v)=>'"'+String(v??'').replace(/"/g,'""')+'"';
+  const lines=[['Chapter','Member','Status','Track','Induction','Mentor','Health','Task','Owner','Due','Task status','Done by','Done on','Rating','Note'].map(q).join(',')];
+  for(const t of scoped(S.tasks)){ const m=S.memberById.get(t.member_id); if(!m) continue;
+    lines.push([chName(m.chapter_id),m.full_name,m.status,track(m),m.induction_date,m.mentor_name,health(m).status,t.title,t.owner_role,t.due_date,t.status,t.done_by,t.done_on,t.rating,t.note].map(q).join(',')); }
+  const blob=new Blob(['﻿'+lines.join('\n')],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='journey-tasks-'+todayISO()+'.csv'; a.click();
+}
+
+boot();
+</script>
+</body>
+</html>
