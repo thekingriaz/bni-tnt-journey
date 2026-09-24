@@ -13,7 +13,7 @@ async function loadAll() {
     rest('chapters?select=*&active=eq.true&order=name'),
     restAll('members?select=*&status=eq.active'),
     restAll('tasks?select=id,member_id,chapter_id,template_code,title,owner_role,due_date,status,rating,done_on'),
-    restAll('palms_rows?select=member_id,a,one2one,rgi,rgo,rri,rro,palms_uploads(period_from,period_to)&member_id=not.is.null'),
+    restAll('palms_rows?select=member_id,a,s,m,one2one,rgi,rgo,rri,rro,palms_uploads(period_from,period_to)&member_id=not.is.null'),
     restAll('member_health?select=*'),
     rest('app_config?select=key,value'),
     restAll('sdc_reviews?select=chapter_id,review_month'),
@@ -133,6 +133,18 @@ module.exports = async (req, res) => {
           });
           row.red_alerted_at = new Date().toISOString();
           log.red_alerts.push({ member: m.full_name, chapter: ch && ch.name, telegram_ok: !!(tg && tg.ok) });
+        }
+        // Substitute talk: once per PALMS month, when at the limit (or 2+ in a new member's first 90 days).
+        // Skipped when the member is red, because the recovery 1-1 already covers it.
+        if (h.subs && h.subs.talk && h.status !== 'red') {
+          const code = `SUB-${h.subs.period_to.slice(0, 7)}`;
+          await rest('tasks?on_conflict=member_id,template_code', {
+            method: 'POST', prefer: 'resolution=ignore-duplicates,return=minimal',
+            body: [{ member_id: m.id, chapter_id: m.chapter_id, template_code: code, seq: 210,
+              title: `Substitute talk (${h.subs.subs} substitutes in 26 weeks): find out why, time clash or low value, and note it`,
+              owner_role: 'CMC + Mentor', due_date: addDays(today, 7) }],
+          });
+          log.substitute_talks = (log.substitute_talks || 0) + 1;
         }
         upserts.push(row);
       }
