@@ -196,7 +196,9 @@ function health(m){
   if(!S.healthCache.has(m.id)) S.healthCache.set(m.id, Health.computeHealth(m, S.tasksBy.get(m.id)||[], S.palmsBy.get(m.id)||[], todayISO()));
   return S.healthCache.get(m.id);
 }
-function scoped(list){ return S.chapterSel==='all' ? list : list.filter(x=>x.chapter_id===Number(S.chapterSel)); }
+// Inactive chapters (e.g. BNI Sandbox for practice) never count in 'All chapters' or the Region view.
+const liveCh = (id) => { const c=S.chapters.find(x=>x.id===id); return !c || c.active!==false; };
+function scoped(list){ return S.chapterSel==='all' ? list.filter(x=>liveCh(x.chapter_id)) : list.filter(x=>x.chapter_id===Number(S.chapterSel)); }
 function activeMembers(){ return scoped(S.members).filter(m=>m.status==='active'); }
 function track(m){ return m.induction_date && m.induction_date < goLive() ? 'B' : 'A'; }
 function monthNo(m){ return m.induction_date ? Math.max(1, Math.floor(daysBetween(m.induction_date, todayISO())/30.44)+1) : 0; }
@@ -235,7 +237,7 @@ async function afterLogin(session){
   if(isAdmin()){
     S.chapterSel = sessionStorageGet('chSel') || 'all';
     const sel=$('#chapterSel'); sel.classList.remove('hidden');
-    sel.innerHTML='<option value="all">All chapters</option>'+S.chapters.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
+    sel.innerHTML='<option value="all">All chapters</option>'+S.chapters.map(c=>`<option value="${c.id}">${esc(c.name)}${c.active===false?' (practice)':''}</option>`).join('');
     sel.value=S.chapterSel;
     sel.onchange=()=>{ S.chapterSel=sel.value; sessionStorageSet('chSel', sel.value); render(); };
     $('#whoami').textContent='Region admin · '+session.user.email;
@@ -494,17 +496,17 @@ function monthCompletion(chId, ms){
 }
 function viewRegion(){
   const today=todayISO(), m1=monthStart(addDays(monthStart(today),-1)), m2=monthStart(addDays(m1,-1));
-  const rows=S.chapters.map(ch=>{
+  const rows=S.chapters.filter(ch=>ch.active!==false).map(ch=>{
     const mem=S.members.filter(m=>m.chapter_id===ch.id&&m.status==='active'); const ids=new Set(mem.map(m=>m.id));
     const ts=S.tasks.filter(t=>ids.has(t.member_id)); const hc={green:0,amber:0,red:0,nodata:0}; mem.forEach(m=>hc[health(m).status]++);
     const p1=monthCompletion(ch.id,m1), p2=monthCompletion(ch.id,m2);
     return {ch, n:mem.length, hc, now:completion(ts,today).pct, p1, p2, over:ts.filter(t=>t.status==='open'&&t.due_date<today).length,
       flag: p1!==null&&p2!==null&&p1<70&&p2<70, reviewed:S.sdc.some(r=>r.chapter_id===ch.id&&r.review_month===m1)};
   }).sort((a,b)=>(b.now??-1)-(a.now??-1));
-  const reds=S.members.filter(m=>m.status==='active'&&health(m).status==='red');
-  const matured=S.members.filter(m=>m.induction_date && addDays(m.induction_date,365)<=today && m.status!=='active');
+  const reds=S.members.filter(m=>liveCh(m.chapter_id)&&m.status==='active'&&health(m).status==='red');
+  const matured=S.members.filter(m=>liveCh(m.chapter_id)&&m.induction_date && addDays(m.induction_date,365)<=today && m.status!=='active');
   const renewed=matured.filter(m=>m.status==='renewed').length;
-  const all=S.members.filter(m=>m.status==='active');
+  const all=S.members.filter(m=>liveCh(m.chapter_id)&&m.status==='active');
   const allTs=S.tasks.filter(t=>S.memberById.get(t.member_id)?.status==='active');
   const reg=completion(allTs,today);
   const ml=(ms)=>MON[+ms.slice(5,7)-1];

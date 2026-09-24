@@ -115,6 +115,7 @@ module.exports = async (req, res) => {
     if (doDaily) {
       const upserts = [];
       for (const m of data.members) {
+        if (!chById.has(m.chapter_id)) continue;   // inactive chapter (e.g. BNI Sandbox): never alert
         const h = computeHealth(m, tasksByMember.get(m.id) || [], palmsByMember.get(m.id) || [], today);
         const prev = prevHealth.get(m.id);
         const row = {
