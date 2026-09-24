@@ -100,6 +100,13 @@ module.exports = async (req, res) => {
 
     const mode = body.mode || 'auto';
     const dryRun = !!body.dry_run;                 // test sends go to region chat only
+    // PAUSE SWITCH: nothing goes to chapter HT groups until an admin sets Telegram to Live.
+    const live = String(data.config.telegram_live || 'false') === 'true';
+    log.telegram_live = live;
+    if (!live && !(dryRun && mode === 'weekly')) {
+      log.paused = 'Telegram is PAUSED. No health alerts, weekly lists or summaries were sent. Switch to Live in Admin when ready.';
+      return send(res, 200, log);
+    }
     const doDaily = isCron || mode === 'daily';
     const doWeekly = (isCron && dow === 1) || mode === 'weekly';
     const doMonthly = (isCron && dom === 1) || mode === 'monthly';

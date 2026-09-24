@@ -537,7 +537,7 @@ function viewAdmin(){
   </div>
 
   <div class="card"><b>3. Upload PALMS (monthly)</b>
-    <p class="small muted">BNI Connect → Chapter → Summary PALMS Report → one chapter, one calendar month → Export. Upload one file per chapter.</p>
+    <p class="small muted">BNI Connect → Region → Summary PALMS Report → one calendar month → Export. Upload one file per region (2 files a month). Chapter reports also work.</p>
     <input type="file" id="palmsFile" accept=".xls,.xlsx">
     <div id="palmsPreview"></div>
     ${palmsUploadsTable()}
@@ -556,6 +556,11 @@ function viewAdmin(){
     <label class="f">HT group chat id per chapter</label>
     <div class="tw"><table class="t"><tbody>${S.chapters.map(c=>`<tr><td>${esc(c.name)}</td><td><input type="text" name="tg_${c.id}" value="${esc(c.telegram_chat_id||'')}"></td></tr>`).join('')}</tbody></table></div>
     <div class="row"><button class="btn" type="submit">Save settings</button></div></form>
+    <div class="card" style="margin-top:14px;background:${S.config.telegram_live==='true'?'var(--g-bg)':'var(--a-bg)'}">
+      <div class="row"><div class="grow"><b>Telegram to chapter HT groups: ${S.config.telegram_live==='true'?'LIVE':'PAUSED'}</b>
+        <div class="small">${S.config.telegram_live==='true'?'Weekly lists (Mondays), red alerts (daily) and the monthly summary are being sent.':'Nothing is sent to any group. Only the TEST button below works (it posts to the region chat).'}</div></div>
+        <button class="btn sm ${S.config.telegram_live==='true'?'ghost':''}" data-act="toggleLive">${S.config.telegram_live==='true'?'Pause':'Go live'}</button></div>
+    </div>
     <div class="row" style="margin-top:14px">
       <button class="btn ghost sm" data-act="cron" data-mode="ping">Check bot can reach all HT groups</button>
       <button class="btn ghost sm" data-act="cron" data-mode="weekly" data-dry="1">Send TEST weekly lists to region chat</button>
@@ -621,6 +626,7 @@ async function onImportFile(e){
       if(g(r,'payment date')!=='' && !row.payment_date) probs.push('bad payment date');
       if(g(r,'induction date')!=='' && !row.induction_date) probs.push('bad induction date');
       if(!row.payment_date && !row.induction_date) probs.push('needs an induction or payment date');
+      if(row.induction_date && row.induction_date < addDays(goLive(),-365)) probs.push('inducted '+fmt(row.induction_date)+', more than 12 months before go-live, so not a first-year member');
       const key=row.chapter_id+'|'+Palms.norm(name);
       row._dup = existing.has(key) || seen.has(key); seen.add(key);
       if(probs.length) errs.push('Row '+line+' ('+name+'): '+probs.join(', ')); else out.push(row);
@@ -652,46 +658,56 @@ async function onPalmsFile(e){
     const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,raw:true,defval:''});
     const p=Palms.parsePalms(rows);
     if(p.errors.length) throw new Error(p.errors.join(' '));
-    const ch=S.chapters.find(c=>Palms.norm(c.name)===Palms.norm(p.chapter));
-    if(!ch) throw new Error('This file is for "'+p.chapter+'", which is not one of the 14 chapters in the app. Use the Chapter Summary PALMS Report.');
     const span=daysBetween(p.from,p.to);
-    const pool=S.members.filter(m=>m.chapter_id===ch.id);
-    const links=S.links.filter(l=>l.chapter_id===ch.id);
-    p.members.forEach(r=>{ const mm=Palms.matchMember(r.palms_name, pool, links); r.member_id=mm?mm.member_id:null; r.how=mm?mm.how:null; });
-    const matchedIds=new Set(p.members.filter(r=>r.member_id).map(r=>r.member_id));
-    const missing=pool.filter(m=>m.status==='active'&&!matchedIds.has(m.id));
-    PALMS_UP={file:file.name, chapter:ch, p};
+    // group rows by chapter (a Region report holds many chapters, a Chapter report holds one)
+    const names=[...new Set(p.members.map(r=>r.chapter))];
+    const unknown=names.filter(n=>!S.chapters.some(c=>Palms.norm(c.name)===Palms.norm(n)));
+    const groups=S.chapters.filter(c=>names.some(n=>Palms.norm(n)===Palms.norm(c.name))).map(ch=>{
+      const rowsCh=p.members.filter(r=>Palms.norm(r.chapter)===Palms.norm(ch.name));
+      const pool=S.members.filter(m=>m.chapter_id===ch.id);
+      const links=S.links.filter(l=>l.chapter_id===ch.id);
+      rowsCh.forEach(r=>{ const mm=Palms.matchMember(r.palms_name, pool, links); r.member_id=mm?mm.member_id:null; r.how=mm?mm.how:null; });
+      const matched=new Set(rowsCh.filter(r=>r.member_id).map(r=>r.member_id));
+      const missing=pool.filter(m=>m.status==='active'&&!matched.has(m.id));
+      return {ch, rows:rowsCh, missing};
+    });
+    if(!groups.length) throw new Error('None of the chapters in this file are in the app. Use the Chapter or Region Summary PALMS Report.');
+    PALMS_UP={file:file.name, p, groups};
+    const totalMatched=groups.reduce((a,g)=>a+g.rows.filter(r=>r.member_id).length,0);
+    const totalMissing=groups.reduce((a,g)=>a+g.missing.length,0);
     box.innerHTML=`<div style="margin-top:10px">
       ${span>35?`<div class="warn">This file covers ${span+1} days (${fmtS(p.from)} to ${fmt(p.to)}). The Health Score only uses one-month files. Please export one calendar month.</div>`:''}
-      <p><b>${esc(ch.name)}</b> · ${fmtS(p.from)} to ${fmt(p.to)} · ${p.members.length} members in file · <b>${p.members.filter(r=>r.member_id).length}</b> matched to first-year members.</p>
-      ${missing.length?`<div class="warn"><b>${missing.length} first-year member(s) not found in this file.</b> Link them below if their BNI Connect name is spelled differently:
-        ${missing.map(m=>`<div class="row" style="margin-top:6px"><span class="grow">${esc(m.full_name)}</span>
-          <select data-link="${m.id}" style="max-width:260px"><option value="">Not in this file</option>${p.members.filter(r=>!r.member_id).map((r,i)=>`<option value="${esc(r.palms_name)}">${esc(r.palms_name)}</option>`).join('')}</select></div>`).join('')}</div>`:''}
-      <button class="btn" data-act="savePalms" ${span>35?'disabled':''}>Save PALMS for ${esc(ch.name)}</button></div>`;
+      ${unknown.length?`<div class="warn">Skipped (not one of the 14 chapters in the app): ${unknown.map(esc).join(', ')}</div>`:''}
+      <p><b>${p.multi?'Region: '+esc(p.region||''):esc(groups[0].ch.name)}</b> · ${fmtS(p.from)} to ${fmt(p.to)} · ${groups.length} chapter(s) · ${p.members.length} members in file · <b>${totalMatched}</b> matched to first-year members${totalMissing?` · <span class="flag">${totalMissing} not found</span>`:''}</p>
+      ${groups.filter(g=>g.missing.length).map(g=>`<div class="warn"><b>${esc(g.ch.name)}: ${g.missing.length} first-year member(s) not found.</b> Link them if their BNI Connect name is spelled differently:
+        ${g.missing.map(m=>`<div class="row" style="margin-top:6px"><span class="grow">${esc(m.full_name)}</span>
+          <select data-link="${m.id}" data-ch="${g.ch.id}" style="max-width:260px"><option value="">Not in this file</option>${g.rows.filter(r=>!r.member_id).map(r=>`<option value="${esc(r.palms_name)}">${esc(r.palms_name)}</option>`).join('')}</select></div>`).join('')}</div>`).join('')}
+      <button class="btn" data-act="savePalms" ${span>35?'disabled':''}>Save PALMS for ${groups.length} chapter(s)</button></div>`;
   }catch(err){ box.innerHTML='<div class="warn">'+esc(err.message)+'</div>'; PALMS_UP=null; }
 }
 async function savePalms(btn){
   if(!PALMS_UP) return; btn.disabled=true; btn.textContent='Saving…';
-  const {chapter:ch,p,file}=PALMS_UP;
+  const {p,file,groups}=PALMS_UP;
   try{
-    // manual links chosen in the preview
     const newLinks=[];
-    document.querySelectorAll('select[data-link]').forEach(sel=>{ if(sel.value){ const mid=Number(sel.dataset.link); newLinks.push({chapter_id:ch.id, palms_name:sel.value, member_id:mid});
-      const r=p.members.find(x=>x.palms_name===sel.value); if(r){ r.member_id=mid; r.how='linked'; } } });
+    document.querySelectorAll('select[data-link]').forEach(sel=>{ if(!sel.value) return;
+      const mid=Number(sel.dataset.link), chId=Number(sel.dataset.ch);
+      newLinks.push({chapter_id:chId, palms_name:sel.value, member_id:mid});
+      const g=groups.find(x=>x.ch.id===chId); const r=g&&g.rows.find(x=>x.palms_name===sel.value); if(r){ r.member_id=mid; r.how='linked'; } });
     if(newLinks.length){ const {error}=await S.sb.from('palms_links').upsert(newLinks,{onConflict:'chapter_id,palms_name'}); if(error) throw error; }
-    // replace an earlier upload of the same period
-    await S.sb.from('palms_uploads').delete().eq('chapter_id',ch.id).eq('period_from',p.from).eq('period_to',p.to);
-    const {data:up,error:e1}=await S.sb.from('palms_uploads').insert({chapter_id:ch.id, period_from:p.from, period_to:p.to, file_name:file, uploaded_by:S.session.user.id}).select().single();
-    if(e1) throw e1;
-    const rows=p.members.map(r=>({upload_id:up.id, chapter_id:ch.id, palms_name:r.palms_name, member_id:r.member_id||null, p:r.p,a:r.a,l:r.l,m:r.m,s:r.s,rgi:r.rgi,rgo:r.rgo,rri:r.rri,rro:r.rro,v:r.v,one2one:r.one2one,tyfcb:r.tyfcb,ceu:r.ceu}));
-    for(let i=0;i<rows.length;i+=200){ const {error}=await S.sb.from('palms_rows').insert(rows.slice(i,i+200)); if(error) throw error; }
-    // PALMS proves first referral passed / received
-    const gave=p.members.filter(r=>r.member_id&&(r.rgi+r.rgo)>0).map(r=>r.member_id);
-    const got=p.members.filter(r=>r.member_id&&(r.rri+r.rro)>0).map(r=>r.member_id);
+    const gave=[], got=[];
+    for(const g of groups){
+      await S.sb.from('palms_uploads').delete().eq('chapter_id',g.ch.id).eq('period_from',p.from).eq('period_to',p.to);
+      const {data:up,error:e1}=await S.sb.from('palms_uploads').insert({chapter_id:g.ch.id, period_from:p.from, period_to:p.to, file_name:file, uploaded_by:S.session.user.id}).select().single();
+      if(e1) throw e1;
+      const rows=g.rows.map(r=>({upload_id:up.id, chapter_id:g.ch.id, palms_name:r.palms_name, member_id:r.member_id||null, p:r.p,a:r.a,l:r.l,m:r.m,s:r.s,rgi:r.rgi,rgo:r.rgo,rri:r.rri,rro:r.rro,v:r.v,one2one:r.one2one,tyfcb:r.tyfcb,ceu:r.ceu}));
+      for(let i=0;i<rows.length;i+=200){ const {error}=await S.sb.from('palms_rows').insert(rows.slice(i,i+200)); if(error) throw error; }
+      g.rows.forEach(r=>{ if(!r.member_id) return; if(r.rgi+r.rgo>0) gave.push(r.member_id); if(r.rri+r.rro>0) got.push(r.member_id); });
+    }
     const stamp={status:'done', done_by:'PALMS', done_on:p.to};
-    if(gave.length) await S.sb.from('tasks').update(stamp).in('member_id',gave).eq('template_code','A19').eq('status','open');
-    if(got.length) await S.sb.from('tasks').update(stamp).in('member_id',got).eq('template_code','A20').eq('status','open');
-    toast('PALMS saved for '+ch.name); PALMS_UP=null; await loadData(); render();
+    for(let i=0;i<gave.length;i+=200) await S.sb.from('tasks').update(stamp).in('member_id',gave.slice(i,i+200)).eq('template_code','A19').eq('status','open');
+    for(let i=0;i<got.length;i+=200) await S.sb.from('tasks').update(stamp).in('member_id',got.slice(i,i+200)).eq('template_code','A20').eq('status','open');
+    toast('PALMS saved for '+groups.length+' chapter(s)'); PALMS_UP=null; await loadData(); render();
   }catch(err){ toast(err.message,true); btn.disabled=false; btn.textContent='Save PALMS'; }
 }
 
@@ -763,6 +779,10 @@ document.addEventListener('click', async (e)=>{
     el.disabled=true; try{ const r=await api('/api/admin-users',{action:'set_password',chapter_id:id,password:pw}); toast((r.created?'Login created for ':'Password reset for ')+r.login); adminAfterRender(); }catch(err){ toast(err.message,true); el.disabled=false; } }
   else if(act==='cron'){ const out=$('#cronOut'); out.textContent='Running…'; try{ const r=await api('/api/cron',{mode:el.dataset.mode, dry_run:!!el.dataset.dry}); out.textContent=JSON.stringify(r,null,2); }catch(err){ out.textContent='Error: '+err.message; } }
   else if(act==='export') exportCSV();
+  else if(act==='toggleLive'){ const on=S.config.telegram_live==='true';
+    if(!confirm(on?'Pause all Telegram messages to chapter HT groups?':'Go LIVE? Weekly lists, red alerts and monthly summaries will start going to all 14 HT groups.')) return;
+    const {error}=await S.sb.from('app_config').upsert({key:'telegram_live',value:on?'false':'true'},{onConflict:'key'}); if(error) return toast(error.message,true);
+    await loadData(); render(); toast(on?'Telegram paused':'Telegram is LIVE'); }
 });
 document.addEventListener('input', (e)=>{
   const f=e.target.dataset.f; if(!f) return; const [a,b]=f.split('.'); S.filters[a][b]=e.target.value;
