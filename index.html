@@ -314,7 +314,34 @@ function taskCard(t, m){
 }
 
 /* ======================= Members ======================= */
+function viewMentors(){
+  const list=activeMembers().slice().sort((a,b)=>(a.mentor_name?1:0)-(b.mentor_name?1:0) || a.full_name.localeCompare(b.full_name));
+  const ch=Number(S.chapterSel);
+  const names=[...new Set([...S.people.filter(p=>p.chapter_id===ch).map(p=>p.name), ...S.members.filter(m=>m.chapter_id===ch&&m.mentor_name).map(m=>m.mentor_name)])].sort();
+  const missing=list.filter(m=>!m.mentor_name).length;
+  return `<div class="row"><h2 class="grow" style="margin:4px 0">Assign mentors</h2><button class="btn ghost sm" data-act="mentorMode">Back to members</button></div>
+  <p class="muted" style="margin-top:4px">${list.length} first-year members · <b>${missing}</b> without a mentor. Type or pick a name, then press <b>Save all</b> once at the end.</p>
+  <datalist id="mentorList">${names.map(n=>`<option value="${esc(n)}">`).join('')}</datalist>
+  <div class="tw"><table class="t"><thead><tr><th>Member</th><th>Joined</th><th>Personal mentor</th><th>Mentor mobile</th></tr></thead><tbody>
+  ${list.map(m=>`<tr><td><b>${esc(m.full_name)}</b>${m.notes&&/rejoined|break/i.test(m.notes)?'<div class="small" style="color:var(--a)">Rejoined after a break: pick a strong mentor</div>':''}</td>
+    <td class="small">${m.induction_date?fmtS(m.induction_date)+' '+m.induction_date.slice(0,4):'-'}</td>
+    <td><input type="text" list="mentorList" data-mentor="${m.id}" value="${esc(m.mentor_name||'')}" placeholder="Mentor name" style="min-width:150px"></td>
+    <td><input type="tel" data-mmob="${m.id}" value="${esc(m.mentor_mobile||'')}" placeholder="optional" style="min-width:110px"></td></tr>`).join('')}
+  </tbody></table></div>
+  <div class="row" style="position:sticky;bottom:10px"><button class="btn" data-act="saveMentors" style="box-shadow:0 4px 14px rgba(0,0,0,.2)">Save all</button></div>`;
+}
+async function saveMentors(btn){
+  const changes=[];
+  document.querySelectorAll('input[data-mentor]').forEach(inp=>{ const id=Number(inp.dataset.mentor); const m=S.memberById.get(id);
+    const name=inp.value.trim()||null; const mob=(document.querySelector(`input[data-mmob="${id}"]`).value.trim())||null;
+    if(name!==(m.mentor_name||null) || mob!==(m.mentor_mobile||null)) changes.push({id, mentor_name:name, mentor_mobile:mob}); });
+  if(!changes.length) return toast('Nothing changed');
+  btn.disabled=true; btn.textContent='Saving '+changes.length+'…';
+  for(const c of changes){ const {error}=await S.sb.from('members').update({mentor_name:c.mentor_name, mentor_mobile:c.mentor_mobile}).eq('id',c.id); if(error){ btn.disabled=false; btn.textContent='Save all'; return toast(error.message,true); } }
+  await loadData(); render(); toast(changes.length+' mentor(s) saved. "Mentor assigned" is ticked automatically.');
+}
 function viewMembers(){
+  if(S.mentorMode && S.chapterSel!=='all') return viewMentors();
   const f=S.filters.members;
   let list=activeMembers();
   if(f.q){ const q=f.q.toLowerCase(); list=list.filter(m=>(m.full_name+' '+(m.category||'')+' '+(m.mentor_name||'')).toLowerCase().includes(q)); }
@@ -323,7 +350,9 @@ function viewMembers(){
   const order={red:0,amber:1,nodata:2,green:3};
   list.sort((a,b)=>order[health(a).status]-order[health(b).status] || a.full_name.localeCompare(b.full_name));
   const inactive=scoped(S.members).filter(m=>m.status!=='active').length;
-  return `<h2>Members <span class="muted small">${list.length} first-year</span></h2>
+  const noMentor=activeMembers().filter(m=>!m.mentor_name).length;
+  return `<div class="row"><h2 class="grow" style="margin:4px 0">Members <span class="muted small">${list.length} first-year</span></h2>
+    ${S.chapterSel!=='all'?`<button class="btn sm" data-act="mentorMode">Assign mentors${noMentor?' ('+noMentor+' missing)':''}</button>`:'<span class="small muted">Pick a chapter to assign mentors</span>'}</div>
   <div class="filters">
     <input type="text" data-f="members.q" placeholder="Search name, category, mentor" value="${esc(f.q)}">
     <select data-f="members.health"><option value="">All health</option>${['red','amber','green','nodata'].map(s=>`<option value="${s}" ${f.health===s?'selected':''}>${LBL[s]}</option>`).join('')}</select>
@@ -779,10 +808,20 @@ document.addEventListener('click', async (e)=>{
     el.disabled=true; try{ const r=await api('/api/admin-users',{action:'set_password',chapter_id:id,password:pw}); toast((r.created?'Login created for ':'Password reset for ')+r.login); adminAfterRender(); }catch(err){ toast(err.message,true); el.disabled=false; } }
   else if(act==='cron'){ const out=$('#cronOut'); out.textContent='Running…'; try{ const r=await api('/api/cron',{mode:el.dataset.mode, dry_run:!!el.dataset.dry}); out.textContent=JSON.stringify(r,null,2); }catch(err){ out.textContent='Error: '+err.message; } }
   else if(act==='export') exportCSV();
-  else if(act==='toggleLive'){ const on=S.config.telegram_live==='true';
-    if(!confirm(on?'Pause all Telegram messages to chapter HT groups?':'Go LIVE? Weekly lists, red alerts and monthly summaries will start going to all 14 HT groups.')) return;
-    const {error}=await S.sb.from('app_config').upsert({key:'telegram_live',value:on?'false':'true'},{onConflict:'key'}); if(error) return toast(error.message,true);
-    await loadData(); render(); toast(on?'Telegram paused':'Telegram is LIVE'); }
+  else if(act==='toggleLive'){ const on=S.config.telegram_live==='true'; const first=!S.config.went_live_on; const today=todayISO();
+    if(on){ if(!confirm('Pause all Telegram messages to chapter HT groups?')) return; }
+    else if(!confirm(first
+      ? 'GO LIVE today ('+fmt(today)+')?\n\n1. The journey clock restarts today: every open task is re-dated from '+fmt(today)+', so nothing is overdue on day one.\n2. Weekly lists (Mondays), red alerts and the monthly summary start going to all 14 HT groups.'
+      : 'Resume Telegram messages to all 14 HT groups? (Due dates stay as they are.)')) return;
+    el.disabled=true;
+    if(!on && first){
+      const {error:e1}=await S.sb.from('app_config').upsert([{key:'go_live_date',value:today},{key:'went_live_on',value:today}],{onConflict:'key'}); if(e1){ el.disabled=false; return toast(e1.message,true); }
+      const {error:e2}=await S.sb.rpc('regen_all'); if(e2){ el.disabled=false; return toast('Could not re-date tasks: '+e2.message,true); }
+    }
+    const {error}=await S.sb.from('app_config').upsert({key:'telegram_live',value:on?'false':'true'},{onConflict:'key'}); if(error){ el.disabled=false; return toast(error.message,true); }
+    await loadData(); render(); toast(on?'Telegram paused':(first?'LIVE from today. All due dates now start from '+fmt(today):'Telegram resumed')); }
+  else if(act==='mentorMode'){ S.mentorMode=!S.mentorMode; render(); }
+  else if(act==='saveMentors') saveMentors(el);
 });
 document.addEventListener('input', (e)=>{
   const f=e.target.dataset.f; if(!f) return; const [a,b]=f.split('.'); S.filters[a][b]=e.target.value;
