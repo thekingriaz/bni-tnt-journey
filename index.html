@@ -557,6 +557,7 @@ function viewAdmin(){
     <div class="tw"><table class="t"><tbody>${S.chapters.map(c=>`<tr><td>${esc(c.name)}</td><td><input type="text" name="tg_${c.id}" value="${esc(c.telegram_chat_id||'')}"></td></tr>`).join('')}</tbody></table></div>
     <div class="row"><button class="btn" type="submit">Save settings</button></div></form>
     <div class="row" style="margin-top:14px">
+      <button class="btn ghost sm" data-act="cron" data-mode="ping">Check bot can reach all HT groups</button>
       <button class="btn ghost sm" data-act="cron" data-mode="weekly" data-dry="1">Send TEST weekly lists to region chat</button>
       <button class="btn ghost sm" data-act="cron" data-mode="weekly">Send weekly lists to HT groups now</button>
       <button class="btn ghost sm" data-act="cron" data-mode="daily">Run health check + red alerts now</button>
