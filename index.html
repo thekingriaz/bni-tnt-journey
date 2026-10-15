@@ -149,7 +149,8 @@ function fmt(iso){ if(!iso) return '-'; const [y,m,d]=String(iso).slice(0,10).sp
 function fmtS(iso){ if(!iso) return '-'; const [y,m,d]=String(iso).slice(0,10).split('-'); return `${+d} ${MON[+m-1]}`; }
 function monthStart(iso){ return iso.slice(0,8)+'01'; }
 function toast(msg, err){ const t=document.createElement('div'); t.className='toast'+(err?' err':''); t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(), err?5000:2600); }
-function goLive(){ return S.config.go_live_date || '2026-10-01'; }
+function goLive(){ return S.config.go_live_date || '2026-11-01'; }   // planned date for chapters not live yet
+function goLiveFor(chId){ const c=S.chapters.find(x=>x.id===chId); return (c&&c.go_live_date) || goLive(); }
 const isAdmin = () => S.profile && S.profile.role === 'admin';
 const chName = (id) => (S.chapters.find(c=>c.id===id)||{}).name || '';
 
@@ -200,7 +201,7 @@ function health(m){
 const liveCh = (id) => { const c=S.chapters.find(x=>x.id===id); return !c || c.active!==false; };
 function scoped(list){ return S.chapterSel==='all' ? list.filter(x=>liveCh(x.chapter_id)) : list.filter(x=>x.chapter_id===Number(S.chapterSel)); }
 function activeMembers(){ return scoped(S.members).filter(m=>m.status==='active'); }
-function track(m){ return m.induction_date && m.induction_date < goLive() ? 'B' : 'A'; }
+function track(m){ return m.induction_date && m.induction_date < goLiveFor(m.chapter_id) ? 'B' : 'A'; }
 function monthNo(m){ return m.induction_date ? Math.max(1, Math.floor(daysBetween(m.induction_date, todayISO())/30.44)+1) : 0; }
 function ownerName(t, m){ return (t.owner_role==='Mentor' || t.owner_role==='Mentor + Head Table') && m && m.mentor_name ? `${t.owner_role}: ${m.mentor_name}` : t.owner_role; }
 function completion(tasks, upTo){ const due=tasks.filter(t=>t.status!=='na' && t.due_date<=upTo); const done=due.filter(t=>t.status==='done').length; return {done, total:due.length, pct: due.length? Math.round(done*100/due.length) : null}; }
@@ -519,7 +520,7 @@ function viewRegion(){
   </div>
   <h3>Chapters</h3>
   <div class="tw"><table class="t"><thead><tr><th>Chapter</th><th class="num">Members</th><th>Health</th><th class="num">Done now</th><th class="num">${ml(m1)}</th><th class="num">${ml(m2)}</th><th class="num">Overdue</th><th>SDC review ${ml(m1)}</th></tr></thead><tbody>
-  ${rows.map(r=>`<tr><td><a href="#" data-act="pickChapter" data-id="${r.ch.id}">${esc(r.ch.name.replace(/^BNI /,''))}</a>${r.flag?'<div class="flag small">Below 70% two months: SDC meets ED</div>':''}</td>
+  ${rows.map(r=>`<tr><td><a href="#" data-act="pickChapter" data-id="${r.ch.id}">${esc(r.ch.name.replace(/^BNI /,''))}</a>${r.ch.telegram_live?' <span class="pill g" style="font-size:10px">LIVE</span>':''}${r.flag?'<div class="flag small">Below 70% two months: SDC meets ED</div>':''}</td>
     <td class="num">${r.n}</td>
     <td style="min-width:110px"><div class="mix" title="G ${r.hc.green} / A ${r.hc.amber} / R ${r.hc.red}">${r.n?`<i style="width:${r.hc.green*100/r.n}%;background:var(--g)"></i><i style="width:${r.hc.amber*100/r.n}%;background:var(--a)"></i><i style="width:${r.hc.red*100/r.n}%;background:var(--r)"></i><i style="width:${r.hc.nodata*100/r.n}%;background:#c4c4c9"></i>`:''}</div>
       <div class="small muted">${r.hc.red} red · ${r.hc.amber} amber</div></td>
@@ -583,14 +584,19 @@ function viewAdmin(){
     <form id="cfgForm"><div class="grid2">
       <div><label class="f">App link (sent in Telegram messages)</label><input type="text" name="app_url" value="${esc(S.config.app_url||'')}" placeholder="https://bni-tnt-journey.vercel.app"></div>
       <div><label class="f">Region chat id (monthly summary + tests)</label><input type="text" name="region_chat_id" value="${esc(S.config.region_chat_id||'')}"></div>
+      <div><label class="f">Planned go-live for chapters not live yet</label><input type="date" name="go_live_planned" value="${esc(goLive())}"></div>
     </div>
     <label class="f">HT group chat id per chapter</label>
     <div class="tw"><table class="t"><tbody>${S.chapters.map(c=>`<tr><td>${esc(c.name)}</td><td><input type="text" name="tg_${c.id}" value="${esc(c.telegram_chat_id||'')}"></td></tr>`).join('')}</tbody></table></div>
     <div class="row"><button class="btn" type="submit">Save settings</button></div></form>
-    <div class="card" style="margin-top:14px;background:${S.config.telegram_live==='true'?'var(--g-bg)':'var(--a-bg)'}">
-      <div class="row"><div class="grow"><b>Telegram to chapter HT groups: ${S.config.telegram_live==='true'?'LIVE':'PAUSED'}</b>
-        <div class="small">${S.config.telegram_live==='true'?'Weekly lists (Mondays), red alerts (daily) and the monthly summary are being sent.':'Nothing is sent to any group. Only the TEST button below works (it posts to the region chat).'}</div></div>
-        <button class="btn sm ${S.config.telegram_live==='true'?'ghost':''}" data-act="toggleLive">${S.config.telegram_live==='true'?'Pause':'Go live'}</button></div>
+    <div class="card" style="margin-top:14px">
+      <b>Go-live by chapter</b>
+      <div class="small muted">Each chapter goes live on its own day. Going live restarts that chapter's journey clock (open tasks are re-dated from that day) and switches on its Telegram messages: weekly list on Mondays, red alerts, and its line in the monthly summary. Chapters not live yet use the planned date: ${fmt(goLive())}.</div>
+      <div class="tw" style="margin-top:8px"><table class="t"><thead><tr><th>Chapter</th><th>Status</th><th></th></tr></thead><tbody>
+      ${S.chapters.filter(c=>c.active!==false).map(c=>{ const st=c.telegram_live?'live':(c.go_live_date?'paused':'not');
+        return `<tr><td>${esc(c.name)}</td><td>${st==='live'?'<span class="pill g">LIVE</span> since '+fmt(c.go_live_date):st==='paused'?'<span class="pill a">PAUSED</span> (live since '+fmt(c.go_live_date)+')':'<span class="pill n">Not live</span>'}</td>
+        <td style="text-align:right">${st==='not'?`<button class="btn sm" data-act="chGoLive" data-id="${c.id}">Go live</button>`:st==='live'?`<button class="btn ghost sm" data-act="chPause" data-id="${c.id}">Pause</button>`:`<button class="btn sm" data-act="chResume" data-id="${c.id}">Resume</button>`}</td></tr>`; }).join('')}
+      </tbody></table></div>
     </div>
     <div class="row" style="margin-top:14px">
       <button class="btn ghost sm" data-act="cron" data-mode="ping">Check bot can reach all HT groups</button>
@@ -657,7 +663,8 @@ async function onImportFile(e){
       if(g(r,'payment date')!=='' && !row.payment_date) probs.push('bad payment date');
       if(g(r,'induction date')!=='' && !row.induction_date) probs.push('bad induction date');
       if(!row.payment_date && !row.induction_date) probs.push('needs an induction or payment date');
-      if(row.induction_date && row.induction_date < addDays(goLive(),-365)) probs.push('inducted '+fmt(row.induction_date)+', more than 12 months before go-live, so not a first-year member');
+      const ref=[row.chapter_id?goLiveFor(row.chapter_id):goLive(), todayISO()].sort()[0];   // go-live, or today if go-live is still ahead
+      if(row.induction_date && row.induction_date < addDays(ref,-365)) probs.push('inducted '+fmt(row.induction_date)+', more than 12 months ago, so not a first-year member');
       const key=row.chapter_id+'|'+Palms.norm(name);
       row._dup = existing.has(key) || seen.has(key); seen.add(key);
       if(probs.length) errs.push('Row '+line+' ('+name+'): '+probs.join(', ')); else out.push(row);
@@ -667,7 +674,7 @@ async function onImportFile(e){
     box.innerHTML=`<div style="margin-top:10px">
       ${errs.length?`<div class="warn"><b>${errs.length} row(s) need fixing</b> (they will be skipped):<br>${errs.map(esc).join('<br>')}</div>`:''}
       <p><b>${IMPORT.length}</b> new member(s) ready${dups?`, <b>${dups}</b> already in the app (skipped)`:''}.
-      Track A: ${IMPORT.filter(r=>!r.induction_date||r.induction_date>=goLive()).length} · Track B: ${IMPORT.filter(r=>r.induction_date&&r.induction_date<goLive()).length}</p>
+      Track A: ${IMPORT.filter(r=>!r.induction_date||r.induction_date>=goLiveFor(r.chapter_id)).length} · Track B: ${IMPORT.filter(r=>r.induction_date&&r.induction_date<goLiveFor(r.chapter_id)).length}</p>
       ${IMPORT.length?`<div class="tw"><table class="t"><thead><tr><th>Name</th><th>Chapter</th><th>Induction</th><th>Mentor</th></tr></thead><tbody>${IMPORT.slice(0,200).map(r=>`<tr><td>${esc(r.full_name)}</td><td>${esc(chName(r.chapter_id))}</td><td>${fmt(r.induction_date)}</td><td>${esc(r.mentor_name||'')}</td></tr>`).join('')}</tbody></table></div>
       <button class="btn" data-act="doImport">Import ${IMPORT.length} member(s)</button>`:''}</div>`;
   }catch(err){ box.innerHTML='<div class="warn">'+esc(err.message)+'</div>'; }
@@ -810,18 +817,14 @@ document.addEventListener('click', async (e)=>{
     el.disabled=true; try{ const r=await api('/api/admin-users',{action:'set_password',chapter_id:id,password:pw}); toast((r.created?'Login created for ':'Password reset for ')+r.login); adminAfterRender(); }catch(err){ toast(err.message,true); el.disabled=false; } }
   else if(act==='cron'){ const out=$('#cronOut'); out.textContent='Running…'; try{ const r=await api('/api/cron',{mode:el.dataset.mode, dry_run:!!el.dataset.dry}); out.textContent=JSON.stringify(r,null,2); }catch(err){ out.textContent='Error: '+err.message; } }
   else if(act==='export') exportCSV();
-  else if(act==='toggleLive'){ const on=S.config.telegram_live==='true'; const first=!S.config.went_live_on; const today=todayISO();
-    if(on){ if(!confirm('Pause all Telegram messages to chapter HT groups?')) return; }
-    else if(!confirm(first
-      ? 'GO LIVE today ('+fmt(today)+')?\n\n1. The journey clock restarts today: every open task is re-dated from '+fmt(today)+', so nothing is overdue on day one.\n2. Weekly lists (Mondays), red alerts and the monthly summary start going to all 14 HT groups.'
-      : 'Resume Telegram messages to all 14 HT groups? (Due dates stay as they are.)')) return;
-    el.disabled=true;
-    if(!on && first){
-      const {error:e1}=await S.sb.from('app_config').upsert([{key:'go_live_date',value:today},{key:'went_live_on',value:today}],{onConflict:'key'}); if(e1){ el.disabled=false; return toast(e1.message,true); }
-      const {error:e2}=await S.sb.rpc('regen_all'); if(e2){ el.disabled=false; return toast('Could not re-date tasks: '+e2.message,true); }
-    }
-    const {error}=await S.sb.from('app_config').upsert({key:'telegram_live',value:on?'false':'true'},{onConflict:'key'}); if(error){ el.disabled=false; return toast(error.message,true); }
-    await loadData(); render(); toast(on?'Telegram paused':(first?'LIVE from today. All due dates now start from '+fmt(today):'Telegram resumed')); }
+  else if(act==='chGoLive'||act==='chPause'||act==='chResume'){ const c=S.chapters.find(x=>x.id===id); if(!c) return; const today=todayISO();
+    const msg= act==='chGoLive' ? 'GO LIVE for '+c.name+' today ('+fmt(today)+')?\n\n1. Its journey clock restarts today: every open task in this chapter is re-dated from '+fmt(today)+', so nothing is overdue on day one.\n2. Its HT group starts getting the weekly list (Mondays) and red alerts, and it joins the monthly summary.\n\nOther chapters are not affected.'
+      : act==='chPause' ? 'Pause Telegram messages to '+c.name+' HT group? (Tasks and due dates stay as they are.)' : 'Resume Telegram messages to '+c.name+' HT group? (Due dates stay as they are.)';
+    if(!confirm(msg)) return; el.disabled=true;
+    const upd= act==='chGoLive' ? {go_live_date:today, telegram_live:true} : {telegram_live: act==='chResume'};
+    const {error}=await S.sb.from('chapters').update(upd).eq('id',c.id); if(error){ el.disabled=false; return toast(error.message,true); }
+    if(act==='chGoLive'){ const {error:e2}=await S.sb.rpc('regen_chapter',{p_ch:c.id}); if(e2){ el.disabled=false; return toast('Could not re-date tasks: '+e2.message,true); } }
+    await loadData(); render(); toast(act==='chGoLive'?c.name+' is LIVE from today':act==='chPause'?c.name+' paused':c.name+' resumed'); }
   else if(act==='mentorMode'){ S.mentorMode=!S.mentorMode; render(); }
   else if(act==='saveMentors') saveMentors(el);
 });
@@ -862,7 +865,10 @@ document.addEventListener('submit', async (e)=>{
   }
   if(f.id==='cfgForm'){
     const cfg=[{key:'app_url',value:(fd.app_url||'').trim()},{key:'region_chat_id',value:(fd.region_chat_id||'').trim()}];
+    const planChanged = fd.go_live_planned && fd.go_live_planned!==goLive();
+    if(planChanged) cfg.push({key:'go_live_date',value:fd.go_live_planned});
     const {error}=await S.sb.from('app_config').upsert(cfg,{onConflict:'key'}); if(error) return toast(error.message,true);
+    if(planChanged){ const {error:e3}=await S.sb.rpc('regen_all'); if(e3) return toast('Saved, but could not re-date tasks: '+e3.message,true); }
     for(const c of S.chapters){ const v=(fd['tg_'+c.id]||'').trim(); if(v!==(c.telegram_chat_id||'')){ const {error:e2}=await S.sb.from('chapters').update({telegram_chat_id:v||null}).eq('id',c.id); if(e2) return toast(e2.message,true); } }
     await loadData(); render(); toast('Settings saved');
   }

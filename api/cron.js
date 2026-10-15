@@ -33,7 +33,7 @@ function ownerLabel(t, member) {
   return t.owner_role;
 }
 
-function weeklyText(ch, chMembers, tasksByMember, today, appUrl) {
+function weeklyText(ch, chMembers, tasksByMember, today, appUrl, healthNow) {
   const weekEnd = addDays(today, 6);
   const over = [], due = [];
   for (const m of chMembers) {
@@ -56,6 +56,11 @@ function weeklyText(ch, chMembers, tasksByMember, today, appUrl) {
   } else {
     text += `Overdue (${over.length})\n${over.length ? cap(over) : '- None'}\n\n`;
     text += `Due this week (${due.length})\n${due.length ? cap(due) : '- None'}`;
+  }
+  const reds = chMembers.filter((m) => healthNow && healthNow.get(m.id) && healthNow.get(m.id).status === 'red');
+  if (reds.length) {
+    text += `\n\nRed members now (${reds.length})\n` + reds.slice(0, 15).map((m) => `- ${m.full_name}${m.mentor_name ? ' (mentor: ' + m.mentor_name + ')' : ''}: ${String(healthNow.get(m.id).reasons || '').split('; ').slice(0, 2).join(', ')}`).join('\n');
+    if (reds.length > 15) text += `\n...and ${reds.length - 15} more in the app`;
   }
   if (appUrl) text += `\n\nUpdate here: ${appUrl}`;
   return text;
@@ -100,13 +105,12 @@ module.exports = async (req, res) => {
 
     const mode = body.mode || 'auto';
     const dryRun = !!body.dry_run;                 // test sends go to region chat only
-    // PAUSE SWITCH: nothing goes to chapter HT groups until an admin sets Telegram to Live.
-    const live = String(data.config.telegram_live || 'false') === 'true';
-    log.telegram_live = live;
-    if (!live && !(dryRun && mode === 'weekly')) {
-      log.paused = 'Telegram is PAUSED. No health alerts, weekly lists or summaries were sent. Switch to Live in Admin when ready.';
-      return send(res, 200, log);
-    }
+    // PER-CHAPTER SWITCH: messages, red alerts and recovery tasks only for chapters that are live.
+    // Health scores are still computed for every chapter, so a chapter going live later
+    // does not get a flood of alerts for members who were already red.
+    const liveIds = new Set(data.chapters.filter((c) => c.telegram_live).map((c) => c.id));
+    log.live_chapters = data.chapters.filter((c) => c.telegram_live).map((c) => c.name);
+    if (!liveIds.size) log.paused = 'No chapter is live. Health scores were updated, but nothing was sent and no tasks were created.';
     const doDaily = isCron || mode === 'daily';
     const doWeekly = (isCron && dow === 1) || mode === 'weekly';
     const doMonthly = (isCron && dom === 1) || mode === 'monthly';
@@ -123,7 +127,8 @@ module.exports = async (req, res) => {
           reasons: h.reasons.join('; '), computed_at: new Date().toISOString(),
           red_alerted_at: prev ? prev.red_alerted_at : null,
         };
-        if (h.status === 'red' && (!prev || prev.status !== 'red')) {
+        const chLive = liveIds.has(m.chapter_id);
+        if (chLive && h.status === 'red' && (!prev || prev.status !== 'red')) {
           const ch = chById.get(m.chapter_id);
           const text = `RED ALERT | ${ch ? ch.name : ''}\n\n${m.full_name} has turned red on the New Member Journey.\n\nWhy:\n- ${h.reasons.join('\n- ')}\n\nA recovery 1-1 with the mentor${m.mentor_name ? ' (' + m.mentor_name + ')' : ''} and a Head Table member is due by ${fmt(addDays(today, 7))}.${appUrl ? '\n\n' + appUrl : ''}`;
           const tg = await telegram(ch && ch.telegram_chat_id, text);
@@ -137,7 +142,7 @@ module.exports = async (req, res) => {
         }
         // Substitute talk: once per PALMS month, when at the limit (or 2+ in a new member's first 90 days).
         // Skipped when the member is red, because the recovery 1-1 already covers it.
-        if (h.subs && h.subs.talk && h.status !== 'red') {
+        if (chLive && h.subs && h.subs.talk && h.status !== 'red') {
           const code = `SUB-${h.subs.period_to.slice(0, 7)}`;
           await rest('tasks?on_conflict=member_id,template_code', {
             method: 'POST', prefer: 'resolution=ignore-duplicates,return=minimal',
@@ -160,11 +165,14 @@ module.exports = async (req, res) => {
     // --- weekly: task list per chapter ---
     if (doWeekly) {
       const membersByCh = groupBy(data.members, 'chapter_id');
+      const hRows = await restAll('member_health?select=member_id,status,reasons');
+      const healthNow = new Map(hRows.map((h) => [h.member_id, h]));
       for (const ch of data.chapters) {
         if (body.chapter_id && Number(body.chapter_id) !== ch.id) continue;
+        if (!dryRun && !liveIds.has(ch.id)) continue;   // real sends: live chapters only
         const list = membersByCh.get(ch.id) || [];
         if (!list.length) continue;
-        const text = weeklyText(ch, list, tasksByMember, today, appUrl);
+        const text = weeklyText(ch, list, tasksByMember, today, appUrl, healthNow);
         const target = dryRun ? regionChat : ch.telegram_chat_id;
         const tg = await telegram(target, (dryRun ? '[TEST] ' : '') + text);
         log.weekly.push({ chapter: ch.name, sent_to: target, telegram_ok: !!(tg && tg.ok), error: tg && tg.ok ? null : tg && tg.description });
@@ -172,11 +180,11 @@ module.exports = async (req, res) => {
     }
 
     // --- monthly: region summary ---
-    if (doMonthly) {
+    if (doMonthly && (liveIds.size || dryRun)) {
       const lastMonthEnd = addDays(today.slice(0, 8) + '01', -1);
       const lastMonthStart = lastMonthEnd.slice(0, 8) + '01';
       const healthNow = new Map((await restAll('member_health?select=member_id,status')).map((h) => [h.member_id, h.status]));
-      const rows = data.chapters.map((ch) => {
+      const rows = data.chapters.filter((ch) => dryRun || liveIds.has(ch.id)).map((ch) => {
         const ts = data.tasks.filter((t) => t.chapter_id === ch.id && t.status !== 'na' && t.due_date >= lastMonthStart && t.due_date <= lastMonthEnd);
         const done = ts.filter((t) => t.status === 'done').length;
         const mem = data.members.filter((m) => m.chapter_id === ch.id);
@@ -191,7 +199,7 @@ module.exports = async (req, res) => {
       const below = rows.filter((r) => r.pct !== null && r.pct < 70).map((r) => r.name);
       if (below.length) text += `\nBelow 70%: ${below.join(', ')}`;
       if (appUrl) text += `\n\n${appUrl}`;
-      const tg = await telegram(regionChat, text);
+      const tg = await telegram(regionChat, (dryRun ? '[TEST] ' : '') + text);
       log.monthly = { sent_to: regionChat, telegram_ok: !!(tg && tg.ok), error: tg && tg.ok ? null : tg && tg.description };
     }
 
