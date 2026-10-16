@@ -431,9 +431,9 @@ function viewMember(id){
   </div></div>
 
   <h3>PALMS history</h3>
-  ${palms.length?`<div class="tw"><table class="t"><thead><tr><th>Period</th><th class="num">P</th><th class="num">A</th><th class="num">1-2-1</th><th class="num">Ref given</th><th class="num">Ref received</th></tr></thead><tbody>
-  ${palms.map(p=>`<tr><td>${fmtS(p.period_from)} to ${fmt(p.period_to)}</td><td class="num">${p.p}</td><td class="num">${p.a}</td><td class="num">${Number(p.one2one)}</td><td class="num">${p.rgi+p.rgo}</td><td class="num">${p.rri+p.rro}</td></tr>`).join('')}
-  </tbody></table></div>`:'<div class="card muted">No PALMS linked to this member yet.</div>'}`;
+  ${palms.length?`<div class="tw"><table class="t"><thead><tr><th>Period</th><th class="num" title="Present">P</th><th class="num" title="Absent">A</th><th class="num" title="Substitute sent">S</th><th class="num" title="Medical leave">M</th><th class="num">1-2-1</th><th class="num">Ref given</th><th class="num">Ref received</th></tr></thead><tbody>
+  ${palms.map(p=>`<tr><td>${fmtS(p.period_from)} to ${fmt(p.period_to)}</td><td class="num">${p.p}</td><td class="num">${p.a}</td><td class="num" style="${(p.s||0)>=2?'color:var(--r);font-weight:700':''}">${p.s||0}</td><td class="num">${p.m||0}</td><td class="num">${Number(p.one2one)}</td><td class="num">${p.rgi+p.rgo}</td><td class="num">${p.rri+p.rro}</td></tr>`).join('')}
+  </tbody></table></div><div class="small muted" style="margin-top:4px">P present · A absent · S substitute sent · M medical leave. The Health Score counts S over the last 26 weeks (limit 3) and A + S together (limit 3).</div>`:'<div class="card muted">No PALMS linked to this member yet.</div>'}`;
 }
 
 /* ======================= Dashboard (chapter) ======================= */
